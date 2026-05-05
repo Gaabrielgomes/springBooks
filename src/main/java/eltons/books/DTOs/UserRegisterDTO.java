@@ -1,9 +1,7 @@
 package eltons.books.DTOs;
 
-import eltons.books.enums.Gender;
 import lombok.*;
 
-import java.time.LocalDate;
 
 @Data
 @Builder

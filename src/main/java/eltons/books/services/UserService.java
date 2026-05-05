@@ -8,6 +8,8 @@ import eltons.books.enums.Gender;
 import eltons.books.models.User;
 import eltons.books.repositories.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
@@ -21,6 +23,8 @@ public class UserService {
     private ApiGetter apiGetter;
     @Autowired
     private DataConverter converter;
+    @Autowired
+    private PasswordEncoder passwordEncoder;
     private String APIURL = System.getenv("GOOGLE_BOOKS_BASE_URL");
     private String APIKEY = System.getenv("GOOGLE_BOOKS_API_KEY");
 
@@ -35,7 +39,7 @@ public class UserService {
                 .birth(parseBirthDate(userRegisterDTO.getBirth()))
                 .gender(Gender.fromString(userRegisterDTO.getGender()))
                 .selfDescription(userRegisterDTO.getSelfDescription())
-                .password(userRegisterDTO.getPassword())
+                .password(passwordEncoder.encode(userRegisterDTO.getPassword()))
                 .role(userRegisterDTO.getRole())
                 .build();
         

@@ -2,15 +2,12 @@ package eltons.books.controllers;
 
 import eltons.books.DTOs.UserDTO;
 import eltons.books.DTOs.UserRegisterDTO;
-import eltons.books.enums.Gender;
-import eltons.books.models.User;
 import eltons.books.services.UserService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
-import java.time.LocalDate;
 import java.time.format.DateTimeParseException;
 
 @RestController
@@ -22,13 +19,13 @@ public class UserController {
     public UserController(UserService userS) { this.userS = userS; }
 
     @PostMapping("/newUser")
-    public ResponseEntity<String> newUser(@Validated @RequestBody UserRegisterDTO userRegisterDTO) {
+    public ResponseEntity<String> newUser(@Validated @RequestBody UserRegisterDTO newUserDTO) {
         try {
-            Boolean newUser = userS.newUser(userRegisterDTO);
+            Boolean newUser = userS.newUser(newUserDTO);
 
             if (Boolean.TRUE.equals(newUser)) {
                 return ResponseEntity.status(HttpStatus.CREATED)
-                        .body("Welcome to Eltons' Books, %s!".formatted(userRegisterDTO.getName()));
+                        .body("Welcome to Eltons' Books, %s!".formatted(newUserDTO.getName()));
             }
 
         } catch (DateTimeParseException e) {
