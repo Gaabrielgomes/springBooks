@@ -1,5 +1,7 @@
 package eltons.books.controllers;
 
+import eltons.books.DTOs.UserDTO;
+import eltons.books.DTOs.UserLoginDTO;
 import eltons.books.DTOs.UserRegisterDTO;
 import eltons.books.services.JwtService;
 import eltons.books.services.UserService;
@@ -7,6 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -14,6 +17,7 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.format.DateTimeParseException;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/auth")
@@ -53,18 +57,23 @@ public class AuthController {
     }
 
     @PostMapping("/login")
-    public String login(@RequestBody UserRegisterDTO request) {
+    public ResponseEntity<?> login(@RequestBody UserLoginDTO request) {
+        try {
+            Authentication authentication = authManager.authenticate(
+                    new UsernamePasswordAuthenticationToken(
+                            request.username(),
+                            request.password()
+                    )
+            );
 
-        Authentication authentication = authManager.authenticate(
-                new UsernamePasswordAuthenticationToken(
-                        request.getName(),
-                        request.getPassword()
-                )
-        );
+            UserDetails user = (UserDetails) authentication.getPrincipal();
+            String token = jwtService.generateToken(user);
 
-        UserDetails user = (UserDetails) authentication.getPrincipal();
+            return ResponseEntity.ok(Map.of("token", token));
 
-        assert user != null;
-        return jwtService.generateToken(user);
+        } catch (BadCredentialsException e) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                    .body(Map.of("error", "Invalid username or password."));
+        }
     }
 }
