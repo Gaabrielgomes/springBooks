@@ -1,8 +1,10 @@
 package eltons.books.controllers;
 
 import eltons.books.DTOs.BookDTO;
+import eltons.books.DTOs.BookSaveRequestDTO;
 import eltons.books.models.Book;
 import eltons.books.services.BookService;
+import jakarta.persistence.EntityNotFoundException;
 import org.springframework.dao.DataAccessException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.RequestEntity;
@@ -20,46 +22,40 @@ public class BookController {
 
     private final BookService bookS;
 
-    public BookController(BookService bookService) { this.bookS = bookService; }
+    public BookController(BookService bookService) {
+        this.bookS = bookService;
+    }
+
+    @GetMapping
+    public ResponseEntity<List<BookDTO>> getAllBooks() {
+        return ResponseEntity.ok(bookS.showAllBooks());
+    }
 
     @GetMapping("/search/byTitle")
-    public ResponseEntity<List<BookDTO>> searchBookByTitle(@RequestBody String title) {
+    public ResponseEntity<List<BookDTO>> searchBookByTitle(@RequestParam String title) {
         List<Book> foundBooks = bookS.searchBookByTitle(title);
         return ResponseEntity.ok(bookS.showFoundBooksAsDTO(foundBooks));
     }
 
     @GetMapping("/search/byAuthor")
-    public ResponseEntity<List<BookDTO>> searchBooksByAuthor(@RequestBody String authorName) {
+    public ResponseEntity<List<BookDTO>> searchBooksByAuthor(@RequestParam String authorName) {
         List<Book> foundBooks = bookS.searchBooksByAuthor(authorName);
         return ResponseEntity.ok(bookS.showFoundBooksAsDTO(foundBooks));
     }
 
-    @GetMapping("/getBook/all")
-    public ResponseEntity<List<BookDTO>> getAllBooks() {
-        return ResponseEntity.status(HttpStatus.OK).body(bookS.showAllBooks());
-    }
-
-    @GetMapping("/getBook/byTitle")
-    public ResponseEntity<BookDTO> getBookByTitle(@RequestBody String request) {
-        try {
-            BookDTO foundBook = bookS.getBookByTitleFromDatabase(request);
-            return ResponseEntity.status(HttpStatus.FOUND)
-                    .body(foundBook);
-        } catch (DataAccessException e) {
-            throw e;
-        }
+    @GetMapping("/byTitle")
+    public ResponseEntity<BookDTO> getBookByTitle(@RequestParam String title) {
+        BookDTO foundBook = bookS.getBookByTitleFromDatabase(title);
+        return ResponseEntity.ok(foundBook);
     }
 
     @Transactional
     @PostMapping("/save/byLastSearchedBooksIndex")
-    public ResponseEntity<String> saveBook(@RequestBody Integer index) {
+    public ResponseEntity<String> saveBook(@RequestBody BookSaveRequestDTO dto) {
         try {
-            Book bookToBeSaved = bookS.saveSelectedBook(index);
+            Book saved = bookS.saveSelectedBook(dto);
             return ResponseEntity.status(HttpStatus.CREATED)
-                    .body("Book saved! -> " + bookToBeSaved.toString());
-        } catch (MissingRequestValueException e) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-                    .body("Missing book index.");
+                    .body("Book saved! -> " + saved);
         } catch (IndexOutOfBoundsException e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST)
                     .body("Invalid book index.");
@@ -70,19 +66,17 @@ public class BookController {
     }
 
     @Transactional
-    @DeleteMapping("/delete/byId")
-    public ResponseEntity<String> deleteBookById(@RequestBody Long id) {
+    @DeleteMapping("/{id}")
+    public ResponseEntity<String> deleteBookById(@PathVariable Long id) {
         try {
-            Optional<Book> bookToDelete = bookS.getBookById(id);
-            if (bookToDelete.isPresent()) {
-                return ResponseEntity.status(HttpStatus.OK)
-                        .body("Book deleted!");
-            } else {
-                return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-                        .body("Error to be described");
-            }
-        } catch (DataAccessException e) {
-            throw e;
+            bookS.deleteBookById(id);
+            return ResponseEntity.ok("Book deleted!");
+
+        } catch (EntityNotFoundException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
+
+        } catch (IllegalStateException e) {
+            return ResponseEntity.status(HttpStatus.CONFLICT).body(e.getMessage());
         }
     }
 }

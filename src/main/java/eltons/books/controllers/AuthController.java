@@ -1,6 +1,5 @@
 package eltons.books.controllers;
 
-import eltons.books.DTOs.UserDTO;
 import eltons.books.DTOs.UserLoginDTO;
 import eltons.books.DTOs.UserRegisterDTO;
 import eltons.books.services.JwtService;

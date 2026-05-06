@@ -17,8 +17,6 @@ public class UserController {
 
     @Autowired
     private UserService userS;
-//
-//    public UserController(UserService userS) { this.userS = userS; }
 
     @GetMapping("/fromId")
     public ResponseEntity<UserDTO> showUserFromId(@RequestBody Long request) {

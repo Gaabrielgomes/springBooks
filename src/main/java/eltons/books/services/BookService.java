@@ -1,6 +1,7 @@
 package eltons.books.services;
 
 import eltons.books.DTOs.BookDTO;
+import eltons.books.DTOs.BookSaveRequestDTO;
 import eltons.books.components.ApiGetter;
 import eltons.books.components.DataConverter;
 import eltons.books.models.Author;
@@ -31,8 +32,6 @@ public class BookService {
     @Autowired
     private DataConverter converter;
 
-    List<Book> lastSearchedBooks = new ArrayList<>();
-
     private String APIURL = System.getenv("GOOGLE_BOOKS_BASE_URL");
     private String APIKEY = System.getenv("GOOGLE_BOOKS_API_KEY");
 
@@ -42,11 +41,7 @@ public class BookService {
     }
 
     public Optional<Book> getBookById(Long id) {
-        Optional<Book> bookToBeShown = bookR.findById(id);
-        if (bookToBeShown.isPresent()) {
-            return bookToBeShown;
-        }
-        return null;
+        return bookR.findById(id);
     }
 
     public BookDTO getBookByTitleFromDatabase(String title) {
@@ -57,20 +52,22 @@ public class BookService {
         return null;
     }
 
-    public Book saveSelectedBook(Integer index) {
-        if (index < 0 || index >= lastSearchedBooks.size()) {
-            throw new IndexOutOfBoundsException();
+    public Book saveSelectedBook(BookSaveRequestDTO dto) {
+        Optional<Book> existing = bookR.findByTitle(dto.title());
+        if (existing.isPresent()) {
+            return existing.get();
         }
 
-        Book bookToBeSaved = lastSearchedBooks.get(index);
+        Book book = new Book(
+            dto.title(),
+            verifyAuthor(dto.author()),
+            dto.description(),
+            parsePublishedDate(dto.publishedDate()),
+            dto.pagesNumber(),
+            dto.coverLink()
+        );
 
-        Optional<Book> existingBook = bookR.findByTitle(bookToBeSaved.getTitle());
-
-        if (existingBook.isPresent()) {
-            return existingBook.get();
-        }
-
-        return bookR.save(bookToBeSaved);
+        return bookR.save(book);
     }
 
     public List<Book> searchBookByTitle(String title) {
@@ -78,8 +75,7 @@ public class BookService {
         String encodedTitle = URLEncoder.encode(titleWithPlusSign, StandardCharsets.UTF_8);
         var json = apiGetter.getData(APIURL + encodedTitle + APIKEY);
         BookResponse foundBooks = converter.getData(json, BookResponse.class);
-        lastSearchedBooks = convertToBook(foundBooks);
-        return lastSearchedBooks;
+        return convertToBook(foundBooks);
     }
 
     public List<Book> searchBooksByAuthor(String authorName) {
@@ -87,16 +83,9 @@ public class BookService {
         BookResponse bookResponse = converter.getData(json, BookResponse.class);
         List<Book> books = convertToBook(bookResponse);
 
-        if (books.isEmpty() || books == null) {
+        if (books == null || books.isEmpty()) {
             return null;
         }
-
-        books.forEach(book -> {
-            Optional<Book> existingBook = bookR.findByTitle(book.getTitle());
-            if (!existingBook.isPresent()) {
-                bookR.save(book);
-            }
-        });
 
         return books;
     }
@@ -232,5 +221,9 @@ public class BookService {
         } catch (Exception e) {
             return null;
         }
+    }
+
+    public void deleteBookById(Long id) {
+        bookR.deleteById(id);
     }
 }
