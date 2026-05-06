@@ -27,6 +27,7 @@ public class SecurityConfig {
                 )
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/auth/**").permitAll()
+                        .requestMatchers("/user/**").authenticated()
                         .anyRequest().authenticated()
                 )
                 .formLogin(form -> form
@@ -36,7 +37,7 @@ public class SecurityConfig {
 
         return http.build();
 
-        // Free access to API
+//        Free access to API
 //        http
 //                .csrf(AbstractHttpConfigurer::disable)
 //                .sessionManagement(session ->
