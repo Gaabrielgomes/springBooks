@@ -1,19 +1,19 @@
 package eltons.books.models;
 
-import eltons.books.enums.Gender;
+import eltons.books.models.enums.Gender;
 import jakarta.persistence.*;
 import lombok.*;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
 @Entity
 @Getter
 @Setter
-@Data
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
@@ -28,6 +28,8 @@ public class User implements UserDetails {
     private String selfDescription;
     private String password;
     private String role;
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<BookcaseEntry> bookcase = new ArrayList<>();
 
     public User(String name, LocalDate birth, Gender gender, String selfDescription) {
         this.name = name;

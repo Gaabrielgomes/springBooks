@@ -1,18 +1,18 @@
-package eltons.books.enums;
+package eltons.books.models.enums;
 
 public enum Gender {
     MALE("male"),
     FEMALE("female");
 
-    private final String genre;
+    private final String gender;
 
     Gender(String g) {
-        this.genre = g.toLowerCase();
+        this.gender = g.toLowerCase();
     }
 
     public static Gender fromString(String text) {
         for (Gender c : Gender.values()) {
-            if (c.genre.equalsIgnoreCase(text)) {
+            if (c.gender.equalsIgnoreCase(text)) {
                 return c;
             }
         }

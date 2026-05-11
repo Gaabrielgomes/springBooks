@@ -1,30 +1,49 @@
 package eltons.books.services;
 
+import eltons.books.DTOs.BookDTO;
 import eltons.books.DTOs.UserDTO;
 import eltons.books.DTOs.UserRegisterDTO;
 import eltons.books.components.ApiGetter;
 import eltons.books.components.DataConverter;
-import eltons.books.enums.Gender;
+import eltons.books.models.Book;
+import eltons.books.models.BookcaseEntry;
+import eltons.books.models.enums.Gender;
 import eltons.books.models.User;
+import eltons.books.models.enums.ReadingStatus;
+import eltons.books.repositories.BookRepository;
+import eltons.books.repositories.BookcaseEntryRepository;
 import eltons.books.repositories.UserRepository;
+import jakarta.persistence.EntityNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
+import java.util.List;
 import java.util.Optional;
 
 @Service
 public class UserService {
-    @Autowired
-    private UserRepository userR;
-    @Autowired
-    private ApiGetter apiGetter;
-    @Autowired
-    private DataConverter converter;
-    @Autowired
-    private PasswordEncoder passwordEncoder;
+
+    private final UserRepository userR;
+    private final BookRepository bookR;
+    private final BookcaseEntryRepository bookCER;
+    private final ApiGetter apiGetter;
+    private final DataConverter converter;
+    private final PasswordEncoder passwordEncoder;
+
+    public UserService(UserRepository userR, BookRepository bookR,
+                       BookcaseEntryRepository bookCER, ApiGetter apiGetter,
+                       DataConverter converter, PasswordEncoder passwordEncoder) {
+        this.userR = userR;
+        this.bookR = bookR;
+        this.bookCER = bookCER;
+        this.apiGetter = apiGetter;
+        this.converter = converter;
+        this.passwordEncoder = passwordEncoder;
+    }
+
     private String APIURL = System.getenv("GOOGLE_BOOKS_BASE_URL");
     private String APIKEY = System.getenv("GOOGLE_BOOKS_API_KEY");
 
@@ -63,8 +82,58 @@ public class UserService {
         return convertToUserDTO(new User());
     }
 
-    public String saveBookToUser(Long userId, Long bookId) {
-        return "";
+    public List<BookDTO> showUserBookcase(User u) {
+        return userR.getUserBookcase(u.getId());
+    }
+
+    @Transactional
+    public BookcaseEntry addBookToBookcase(User u, Long bookId) {
+        Book b = bookR.findById(bookId)
+                .orElseThrow(() -> new EntityNotFoundException("Book not found."));
+
+        boolean alreadyInBookcase = bookCER.existsByUserAndBook(u, b);
+        if (alreadyInBookcase) {
+            throw new IllegalStateException("Book already in your bookcase.");
+        }
+
+        BookcaseEntry entry = new BookcaseEntry();
+        entry.setUser(u);
+        entry.setBook(b);
+        entry.setReadingStatus(ReadingStatus.WANT_TO_READ);
+
+        return bookCER.save(entry);
+    }
+
+    @Transactional
+    public Boolean addReview(User u, Long bookId, String review) {
+        Book b = bookR.findById(bookId)
+                .orElseThrow(() -> new EntityNotFoundException("Book not found."));
+
+        boolean entryExistance = bookCER.existsByUserAndBook(u, b);
+
+        if (entryExistance) {
+            BookcaseEntry bookcaseEntry = bookCER.getByUserAndBook(u, b);
+            bookcaseEntry.setReview(review);
+            return true;
+        }
+
+        throw new EntityNotFoundException("Book not found in your bookcase.");
+    }
+
+    @Transactional
+    public boolean removeFromBookcase(User u, Long bookId) {
+        Book b = bookR.findById(bookId)
+                .orElseThrow(() -> new EntityNotFoundException("Book not found."));
+
+        boolean entryExistance = bookCER.existsByUserAndBook(u, b);
+
+        if (entryExistance) {
+            BookcaseEntry bookcaseEntry = bookCER.getByUserAndBook(u, b);
+            bookCER.delete(bookcaseEntry);
+            return true;
+        }
+
+        throw new EntityNotFoundException("Book not found in your bookcase.");
     }
 
     private UserDTO convertToUserDTO(User u) {
