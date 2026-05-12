@@ -10,31 +10,44 @@ import eltons.books.models.BookResponse;
 import eltons.books.models.ImageLinks;
 import eltons.books.repositories.AuthorRepository;
 import eltons.books.repositories.BookRepository;
-import org.springframework.beans.factory.annotation.Autowired;
+import jakarta.persistence.EntityNotFoundException;
 import org.springframework.stereotype.Service;
 
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.time.LocalDate;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
 public class BookService {
-    @Autowired
-    private BookRepository bookR;
-    @Autowired
-    private AuthorRepository authorR;
-    @Autowired
-    private ApiGetter apiGetter;
-    @Autowired
-    private DataConverter converter;
 
-    private String APIURL = System.getenv("GOOGLE_BOOKS_BASE_URL");
-    private String APIKEY = System.getenv("GOOGLE_BOOKS_API_KEY");
+    private final BookRepository bookR;
+    private final AuthorRepository authorR;
+    private final ApiGetter apiGetter;
+    private final DataConverter converter;
+    private final String apiUrl;
+    private final String apiKey;
 
+    public BookService(BookRepository bookR, AuthorRepository authorR,
+                       ApiGetter apiGetter, DataConverter converter) {
+        this.bookR = bookR;
+        this.authorR = authorR;
+        this.apiGetter = apiGetter;
+        this.converter = converter;
+
+        String apiUrl = System.getenv("GOOGLE_BOOKS_BASE_URL");
+        String apiKey = System.getenv("GOOGLE_BOOKS_API_KEY");
+
+        if (apiUrl == null || apiUrl.isBlank())
+            throw new IllegalStateException("Variable GOOGLE_BOOKS_BASE_URL not configured.");
+        if (apiKey == null || apiKey.isBlank())
+            throw new IllegalStateException("Variable GOOGLE_BOOKS_API_KEY not configured.");
+
+        this.apiUrl = apiUrl;
+        this.apiKey = apiKey;
+    }
 
     public List<BookDTO> showAllBooks() {
         return bookR.getAllBooks();
@@ -45,46 +58,39 @@ public class BookService {
     }
 
     public BookDTO getBookByTitleFromDatabase(String title) {
-        Optional<Book> bookToBeShown = bookR.findByTitleIgnoreCase(title);
-        if (bookToBeShown.isPresent()) {
-            return convertBookToDTO(bookToBeShown.get());
-        }
-        return null;
+        return bookR.findByTitleIgnoreCase(title)
+                .map(this::convertBookToDTO)
+                .orElseThrow(() -> new EntityNotFoundException("Book not found."));
     }
 
-    public Book saveSelectedBook(BookSaveRequestDTO dto) {
-        Optional<Book> existing = bookR.findByTitle(dto.title());
-        if (existing.isPresent()) {
-            return existing.get();
-        }
+    public Book saveBook(BookSaveRequestDTO dto) {
+        return bookR.findByTitle(dto.title())
+                .orElseGet(() -> bookR.save(convertFromBookSaveRequestDTO(dto)));
+    }
 
-        Book book = new Book(
-            dto.title(),
-            verifyAuthor(dto.author()),
-            dto.description(),
-            parsePublishedDate(dto.publishedDate()),
-            dto.pagesNumber(),
-            dto.coverLink()
-        );
-
-        return bookR.save(book);
+    public void deleteBookById(Long id) {
+        bookR.deleteById(id);
     }
 
     public List<Book> searchBookByTitle(String title) {
-        String titleWithPlusSign = title.toLowerCase().replace(" ", "+");
-        String encodedTitle = URLEncoder.encode(titleWithPlusSign, StandardCharsets.UTF_8);
-        var json = apiGetter.getData(APIURL + encodedTitle + APIKEY);
+        String encodedTitle = URLEncoder.encode(
+                title.toLowerCase().replace(" ", "+"), StandardCharsets.UTF_8
+        );
+        var json = apiGetter.getData(apiUrl + encodedTitle + apiKey);
         BookResponse foundBooks = converter.getData(json, BookResponse.class);
         return convertToBook(foundBooks);
     }
 
     public List<Book> searchBooksByAuthor(String authorName) {
-        var json = apiGetter.getData(APIURL + "inauthor:" + authorName + APIKEY);
+        String encodedAuthorName = URLEncoder.encode(
+                authorName.toLowerCase().replace(" ", "+"), StandardCharsets.UTF_8
+        );
+        var json = apiGetter.getData(apiUrl + "inauthor:" + authorName + apiKey);
         BookResponse bookResponse = converter.getData(json, BookResponse.class);
         List<Book> books = convertToBook(bookResponse);
 
         if (books == null || books.isEmpty()) {
-            return null;
+            throw new EntityNotFoundException("No books found for this author.");
         }
 
         return books;
@@ -92,8 +98,8 @@ public class BookService {
 
     public List<BookDTO> showFoundBooksAsDTO(List<Book> books) {
         return books.stream()
-                .map(b -> convertBookToDTO(b))
-                .collect(Collectors.toList());
+                .map(this::convertBookToDTO)
+                .toList();
     }
 
     private BookDTO convertBookToDTO(Book b) {
@@ -107,18 +113,15 @@ public class BookService {
         );
     }
 
-    private List<BookDTO> convertToBookDTO(BookResponse books) {
-        return books.getItems().stream()
-                .map(items -> items.getVolumeInfo())
-                .map(volume -> new BookDTO(
-                        verifyTitle(volume.getTitle()),
-                        verifyAuthorString(getFirstAuthor(volume.getAuthors())),
-                        verifyDescription(volume.getDescription()),
-                        verifyPublishedDate(volume.getPublishedDate()),
-                        verifyPagesNumber(volume.getPageCount()),
-                        verifyCoverLink(volume.getImageLinks())
-                ))
-                .collect(Collectors.toList());
+    private Book convertFromBookSaveRequestDTO(BookSaveRequestDTO dto) {
+        return new Book(
+                verifyTitle(dto.title()),
+                verifyAuthor(dto.author()),
+                verifyDescription(dto.description()),
+                verifyPublishedDate(dto.publishedDate()),
+                verifyPagesNumber(dto.pagesNumber()),
+                dto.coverLink()
+        );
     }
 
     private List<Book> convertToBook(BookResponse books) {
@@ -136,94 +139,49 @@ public class BookService {
     }
 
     private String verifyTitle(String title) {
-        if (title == null || title.isBlank()) {
-            return "No title found";
-        }
+        if (title == null || title.isBlank()) return "No title found.";
         return title;
     }
 
     private Author verifyAuthor(String author) {
-        if (author == null || author.isBlank()) {
-            return new Author();
-        }
-        Optional<Author> a = authorR.findByName(author);
-
-        if (a.isPresent()) {
-            return a.get();
-        } else {
-            return authorR.save(new Author(author));
-        }
-    }
-
-    private String verifyAuthorString(String author) {
-        if (author == null || author.isBlank()) {
-            return "No author found";
-        }
-
-        Optional<Author> a = authorR.findByName(author);
-
-        if (a.isPresent()) {
-            return a.get().getName();
-        } else {
-            return "No author found.";
-        }
+        if (author == null || author.isBlank()) return new Author();
+        return authorR.findByName(author)
+                .orElseGet(() -> authorR.save(new Author(author)));
     }
 
     private String verifyDescription(String description) {
-        if (description == null || description.isBlank()) {
-            return "No description found.";
-        }
+        if (description == null || description.isBlank()) return "No description found.";
         return description;
     }
 
     private LocalDate verifyPublishedDate(String publishedDate) {
-        if (publishedDate == null) {
-            return LocalDate.now();
-        }
+        if (publishedDate == null) return LocalDate.now();
         return parsePublishedDate(publishedDate);
     }
 
     private Integer verifyPagesNumber(Integer pagesNumber) {
-        if (pagesNumber == null || pagesNumber <= 0) {
-            return 1;
-        }
+        if (pagesNumber == null || pagesNumber <= 0) return 1;
         return pagesNumber;
     }
 
     private String verifyCoverLink(ImageLinks imageLinks) {
-        if (imageLinks == null) {
-            return "No cover link found.";
-        }
+        if (imageLinks == null) return "No cover link found.";
         return imageLinks.getThumbnail();
     }
 
     private String getFirstAuthor(List<String> authors) {
-        if (authors == null || authors.isEmpty()) {
-            return "Unknown Author";
-        }
+        if (authors == null || authors.isEmpty()) return "Unknown Author";
         return authors.getFirst();
     }
 
     private LocalDate parsePublishedDate(String date) {
-        if (date == null || date.isBlank()) {
-            return null;
-        }
+        if (date == null || date.isBlank()) return null;
         try {
-            if (date.length() == 4) {
-                return LocalDate.of(Integer.parseInt(date), 1, 1);
-            }
-
-            if (date.length() == 7) {
-                return LocalDate.parse(date + "-01");
-            }
-
+            if (date.length() == 4) return LocalDate.of(Integer.parseInt(date), 1, 1);
+            if (date.length() == 7) return LocalDate.parse(date + "-01");
             return LocalDate.parse(date);
         } catch (Exception e) {
             return null;
         }
-    }
-
-    public void deleteBookById(Long id) {
-        bookR.deleteById(id);
     }
 }

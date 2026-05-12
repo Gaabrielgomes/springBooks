@@ -5,21 +5,9 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="2ca1a864-2a9a-4f1b-8032-80cdc887e1e2" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/src/main/java/eltons/books/models/BookcaseEntry.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/eltons/books/controllers/UserController.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/eltons/books/controllers/UserController.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/eltons/books/enums/Gender.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/eltons/books/models/enums/Gender.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/eltons/books/models/User.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/eltons/books/models/User.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/eltons/books/models/UserBook.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/eltons/books/repositories/UserRepository.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/eltons/books/repositories/UserRepository.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/eltons/books/services/UserService.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/eltons/books/services/UserService.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/eltons/books/controllers/UserController.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/eltons/books/controllers/UserController.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/eltons/books/enums/Gender.class" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/eltons/books/models/User$UserBuilder.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/eltons/books/models/User$UserBuilder.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/eltons/books/models/User.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/eltons/books/models/User.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/eltons/books/models/UserBook.class" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/eltons/books/repositories/UserRepository.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/eltons/books/repositories/UserRepository.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/eltons/books/services/UserService.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/eltons/books/services/UserService.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/eltons/books/controllers/BookController.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/eltons/books/controllers/BookController.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/eltons/books/services/BookService.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/eltons/books/services/BookService.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />

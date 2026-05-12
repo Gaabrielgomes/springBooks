@@ -31,29 +31,29 @@ public class BookController {
         return ResponseEntity.ok(bookS.showAllBooks());
     }
 
-    @GetMapping("/search/byTitle")
+    @GetMapping("/search/bytitle")
     public ResponseEntity<List<BookDTO>> searchBookByTitle(@RequestParam String title) {
         List<Book> foundBooks = bookS.searchBookByTitle(title);
         return ResponseEntity.ok(bookS.showFoundBooksAsDTO(foundBooks));
     }
 
-    @GetMapping("/search/byAuthor")
+    @GetMapping("/search/byauthor")
     public ResponseEntity<List<BookDTO>> searchBooksByAuthor(@RequestParam String authorName) {
         List<Book> foundBooks = bookS.searchBooksByAuthor(authorName);
         return ResponseEntity.ok(bookS.showFoundBooksAsDTO(foundBooks));
     }
 
-    @GetMapping("/byTitle")
+    @GetMapping("/mainbookcase/bytitle")
     public ResponseEntity<BookDTO> getBookByTitle(@RequestParam String title) {
         BookDTO foundBook = bookS.getBookByTitleFromDatabase(title);
         return ResponseEntity.ok(foundBook);
     }
 
     @Transactional
-    @PostMapping("/save/byLastSearchedBooksIndex")
+    @PostMapping("/save")
     public ResponseEntity<String> saveBook(@RequestBody BookSaveRequestDTO dto) {
         try {
-            Book saved = bookS.saveSelectedBook(dto);
+            Book saved = bookS.saveBook(dto);
             return ResponseEntity.status(HttpStatus.CREATED)
                     .body("Book saved! -> " + saved);
         } catch (IndexOutOfBoundsException e) {
@@ -66,7 +66,7 @@ public class BookController {
     }
 
     @Transactional
-    @DeleteMapping("/{id}")
+    @DeleteMapping("/delete/{id}")
     public ResponseEntity<String> deleteBookById(@PathVariable Long id) {
         try {
             bookS.deleteBookById(id);
