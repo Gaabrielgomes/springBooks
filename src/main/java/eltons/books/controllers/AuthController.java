@@ -4,6 +4,8 @@ import eltons.books.DTOs.UserLoginDTO;
 import eltons.books.DTOs.UserRegisterDTO;
 import eltons.books.services.JwtService;
 import eltons.books.services.UserService;
+import jakarta.servlet.http.Cookie;
+import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -56,7 +58,8 @@ public class AuthController {
     }
 
     @PostMapping("/login")
-    public ResponseEntity<?> login(@RequestBody UserLoginDTO request) {
+    public ResponseEntity<?> login(@RequestBody UserLoginDTO request,
+                                   HttpServletResponse response) {
         try {
             Authentication authentication = authManager.authenticate(
                     new UsernamePasswordAuthenticationToken(
@@ -68,11 +71,29 @@ public class AuthController {
             UserDetails user = (UserDetails) authentication.getPrincipal();
             String token = jwtService.generateToken(user);
 
-            return ResponseEntity.ok(Map.of("token", token));
+            Cookie cookie = new Cookie("jwt", token);
+            cookie.setHttpOnly(true);
+            cookie.setSecure(false);
+            cookie.setPath("/");
+            cookie.setMaxAge(24 * 3600);
+
+            response.addCookie(cookie);
+
+            return ResponseEntity.ok(Map.of("message", "Login successful."));
 
         } catch (BadCredentialsException e) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
                     .body(Map.of("error", "Invalid username or password."));
         }
+    }
+
+    @PostMapping("/logout")
+    public ResponseEntity<?> logout(HttpServletResponse response) {
+        Cookie cookie = new Cookie("jwt", null);
+        cookie.setHttpOnly(true);
+        cookie.setPath("/");
+        cookie.setMaxAge(0);
+        response.addCookie(cookie);
+        return ResponseEntity.ok(Map.of("message", "Logged out."));
     }
 }
