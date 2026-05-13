@@ -1,0 +1,126 @@
+.home-container {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+}
+
+.home-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 1.25rem 2.5rem;
+    background: var(--color-surface);
+    border-bottom: 1px solid var(--color-border);
+}
+
+.home-header h1 {
+    font-size: 1.3rem;
+    font-weight: 600;
+    color: var(--color-accent);
+}
+
+.home-nav {
+    display: flex;
+    align-items: center;
+    gap: 1.75rem;
+}
+
+.home-nav a {
+    font-size: 0.95rem;
+    color: var(--color-text-secondary);
+    text-decoration: none;
+    transition: color 0.15s;
+}
+
+.home-nav a:hover {
+    color: var(--color-accent);
+}
+
+.logout-btn {
+    background: none;
+    border: 1px solid var(--color-border);
+    color: var(--color-text-secondary);
+    font-size: 0.9rem;
+    padding: 0.4rem 1rem;
+    border-radius: var(--radius-sm);
+    transition: border-color 0.15s, color 0.15s;
+}
+
+.logout-btn:hover {
+    border-color: var(--color-error);
+    color: var(--color-error);
+}
+
+.home-main {
+    flex: 1;
+    padding: 3rem 2.5rem;
+    max-width: 900px;
+    margin: 0 auto;
+    width: 100%;
+}
+
+.home-welcome {
+    margin-bottom: 2.5rem;
+}
+
+.home-welcome h2 {
+    font-size: 1.75rem;
+    font-weight: 600;
+    margin-bottom: 0.35rem;
+}
+
+.home-welcome p {
+    color: var(--color-text-secondary);
+    font-size: 1rem;
+}
+
+.home-cards {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+    gap: 1.25rem;
+}
+
+.home-card {
+    background: var(--color-surface);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-lg);
+    padding: 2rem 1.75rem;
+    cursor: pointer;
+    transition: border-color 0.15s, transform 0.15s;
+}
+
+.home-card:hover {
+    border-color: var(--color-accent);
+    transform: translateY(-3px);
+}
+
+.home-card-icon {
+    font-size: 2rem;
+    margin-bottom: 1rem;
+}
+
+.home-card h3 {
+    font-size: 1.1rem;
+    font-weight: 500;
+    margin-bottom: 0.5rem;
+}
+
+.home-card p {
+    font-size: 0.9rem;
+    color: var(--color-text-secondary);
+    line-height: 1.6;
+}
+
+@media (max-width: 600px) {
+    .home-header {
+        padding: 1rem 1.25rem;
+    }
+
+    .home-main {
+        padding: 2rem 1.25rem;
+    }
+
+    .home-nav a {
+        display: none;
+    }
+}

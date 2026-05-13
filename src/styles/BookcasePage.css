@@ -1,0 +1,228 @@
+/* src/styles/BookcasePage.css */
+.bookcase-container {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+}
+
+.bookcase-main {
+    flex: 1;
+    padding: 2.5rem;
+    max-width: 1100px;
+    margin: 0 auto;
+    width: 100%;
+}
+
+.bookcase-top {
+    margin-bottom: 2.5rem;
+}
+
+.bookcase-top h2 {
+    font-size: 1.5rem;
+    font-weight: 600;
+    margin-bottom: 0.25rem;
+}
+
+.bookcase-top p {
+    font-size: 0.9rem;
+    color: var(--color-text-secondary);
+}
+
+.bookcase-feedback {
+    text-align: center;
+    color: var(--color-text-secondary);
+    margin-top: 3rem;
+}
+
+.bookcase-feedback.error {
+    color: var(--color-error);
+}
+
+.bookcase-empty {
+    text-align: center;
+    margin-top: 4rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+    color: var(--color-text-secondary);
+}
+
+/* Estante */
+.bookcase-shelf-wrapper {
+    margin-top: 1rem;
+}
+
+.bookcase-shelf {
+    display: flex;
+    align-items: flex-end;
+    padding: 1rem 1.5rem 0;
+    background: var(--color-surface);
+    border: 1px solid var(--color-border);
+    border-bottom: none;
+    border-radius: var(--radius-lg) var(--radius-lg) 0 0;
+    min-height: 200px;
+    overflow-x: auto;
+    gap: 0;
+}
+
+.shelf-floor {
+    height: 12px;
+    background: var(--color-border);
+    border-radius: 0 0 var(--radius-lg) var(--radius-lg);
+}
+
+/* Livro */
+.bookcase-book-wrapper {
+    position: relative;
+    margin-right: -18px;
+    z-index: 1;
+    transition: z-index 0s;
+}
+
+.bookcase-book-wrapper:last-child {
+    margin-right: 0;
+}
+
+.bookcase-book-wrapper:hover {
+    z-index: 10;
+}
+
+.bookcase-spine {
+    width: 52px;
+    height: 155px;
+    border-radius: 3px 6px 6px 3px;
+    cursor: pointer;
+    transition: transform 0.2s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: 0.5px solid rgba(0,0,0,0.08);
+}
+
+.bookcase-book-wrapper:hover .bookcase-spine {
+    transform: translateY(-20px) scale(1.04);
+}
+
+.spine-title {
+    writing-mode: vertical-rl;
+    text-orientation: mixed;
+    transform: rotate(180deg);
+    font-size: 11px;
+    font-weight: 500;
+    color: rgba(255,255,255,0.9);
+    padding: 8px 4px;
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    max-height: 130px;
+}
+
+/* Card de detalhes no hover */
+.bookcase-detail {
+    position: absolute;
+    bottom: calc(100% + 8px);
+    left: 50%;
+    transform: translateX(-50%);
+    width: 220px;
+    background: var(--color-surface);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-md);
+    padding: 1rem;
+    box-shadow: 0 4px 16px rgba(0,0,0,0.1);
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.2s ease;
+    z-index: 20;
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.bookcase-book-wrapper:hover .bookcase-detail {
+    opacity: 1;
+    pointer-events: all;
+}
+
+.bookcase-detail h3 {
+    font-size: 0.9rem;
+    font-weight: 500;
+    line-height: 1.4;
+}
+
+.detail-author {
+    font-size: 0.8rem;
+    color: var(--color-text-secondary);
+}
+
+.detail-review {
+    font-size: 0.8rem;
+    color: var(--color-text-secondary);
+    font-style: italic;
+    line-height: 1.5;
+}
+
+/* Status badge */
+.status-badge {
+    font-size: 0.75rem;
+    font-weight: 500;
+    padding: 0.2rem 0.6rem;
+    border-radius: 999px;
+    align-self: flex-start;
+}
+
+.status-badge.status-want_to_read {
+    background: #e6f1fb;
+    color: #185fa5;
+}
+
+.status-badge.status-reading {
+    background: #eaf3de;
+    color: #3b6d11;
+}
+
+.status-badge.status-finished {
+    background: #e1f5ee;
+    color: #0f6e56;
+}
+
+/* Select de status */
+.status-select {
+    width: 100%;
+    padding: 0.4rem 0.75rem;
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-sm);
+    background: var(--color-surface);
+    color: var(--color-text-primary);
+    font-family: inherit;
+    font-size: 0.8rem;
+    outline: none;
+    cursor: pointer;
+}
+
+.status-select:focus {
+    border-color: var(--color-accent);
+}
+
+/* Botão remover */
+.remove-btn {
+    width: 100%;
+    background: none;
+    border: 1px solid var(--color-border);
+    color: var(--color-error);
+    font-size: 0.8rem;
+    padding: 0.4rem;
+    border-radius: var(--radius-sm);
+    margin-top: 0.25rem;
+    transition: background 0.15s, border-color 0.15s;
+}
+
+.remove-btn:hover {
+    background: #fcebeb;
+    border-color: var(--color-error);
+}
+
+@media (max-width: 600px) {
+    .bookcase-main {
+        padding: 1.5rem 1rem;
+    }
+}
