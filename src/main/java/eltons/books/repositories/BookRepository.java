@@ -11,6 +11,7 @@ import java.util.Optional;
 public interface BookRepository extends JpaRepository<Book, Long> {
     @Query(value = """
         SELECT 
+        b.id,
         b.title,
         authors.name,
         b.description,
@@ -29,6 +30,7 @@ public interface BookRepository extends JpaRepository<Book, Long> {
 
     @Query(value = """
         SELECT
+        b.id,
         b.title,
         authors.name,
         b.description,

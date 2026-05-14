@@ -1,13 +1,14 @@
 package eltons.books.controllers;
 
-import eltons.books.DTOs.BookDTO;
 import eltons.books.DTOs.UserDTO;
-import eltons.books.models.Book;
+import eltons.books.models.BookcaseEntry;
+import eltons.books.DTOs.BookcaseEntryDTO;
 import eltons.books.models.User;
 import eltons.books.services.UserService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -23,26 +24,34 @@ public class UserController {
         this.userS = userService;
     }
 
-    @GetMapping("/me")
+    @GetMapping
     public ResponseEntity<UserDTO> getMyProfile() {
         User user = getAuthenticatedUser();
-        return ResponseEntity.ok(userS.showUserFromName(user.getName()));
+        return ResponseEntity.ok(userS.showUserFromId(user.getId()));
     }
 
-    @GetMapping("/me/bookcase")
-    public ResponseEntity<List<BookDTO>> getMyBookcase() {
+    @GetMapping("/bookcase")
+    public ResponseEntity<List<BookcaseEntryDTO>> getMyBookcase() {
         User user = getAuthenticatedUser();
         return ResponseEntity.ok(userS.showUserBookcase(user));
     }
 
-    @PostMapping("/me/bookcase/add/{bookId}")
-    public ResponseEntity<String> addBookToBookcase(@PathVariable Long bookId) {
+    @GetMapping("/bookcase/showbook/{bookId}")
+    public ResponseEntity<BookcaseEntryDTO> showBookFromUserBookcase(@PathVariable Long bookId) {
         User user = getAuthenticatedUser();
-        userS.addBookToBookcase(user, bookId);
-        return ResponseEntity.status(HttpStatus.CREATED).body("Book added to bookcase.");
+        return ResponseEntity.ok(userS.showBookFromUserBookcase(user, bookId));
     }
 
-    @PutMapping("/me/bookcase/{bookId}/review")
+    @Transactional
+    @PostMapping("/bookcase/addbook/{bookId}")
+    public ResponseEntity<BookcaseEntry> addBookToBookcase(@PathVariable Long bookId) {
+        User user = getAuthenticatedUser();
+        userS.addBookToBookcase(user, bookId);
+        return ResponseEntity.status(HttpStatus.CREATED).body();
+    }
+
+    @Transactional
+    @PutMapping("/bookcase/addreview/{bookId}")
     public ResponseEntity<String> addReview(@PathVariable Long bookId,
                                             @RequestBody String review) {
         User user = getAuthenticatedUser();
@@ -50,7 +59,8 @@ public class UserController {
         return ResponseEntity.status(HttpStatus.CREATED).body("Review added.");
     }
 
-    @DeleteMapping("/me/shelf/{bookId}")
+    @Transactional
+    @DeleteMapping("/bookcase/removebook/{bookId}")
     public ResponseEntity<String> removeBookFromShelf(@PathVariable Long bookId) {
         User user = getAuthenticatedUser();
         userS.removeFromBookcase(user, bookId);

@@ -7,6 +7,7 @@ import eltons.books.components.ApiGetter;
 import eltons.books.components.DataConverter;
 import eltons.books.models.Book;
 import eltons.books.models.BookcaseEntry;
+import eltons.books.DTOs.BookcaseEntryDTO;
 import eltons.books.models.enums.Gender;
 import eltons.books.models.User;
 import eltons.books.models.enums.ReadingStatus;
@@ -14,7 +15,6 @@ import eltons.books.repositories.BookRepository;
 import eltons.books.repositories.BookcaseEntryRepository;
 import eltons.books.repositories.UserRepository;
 import jakarta.persistence.EntityNotFoundException;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -74,16 +74,31 @@ public class UserService {
         return convertToUserDTO(new User());
     }
 
-    public UserDTO showUserFromName(String name) {
-        Optional<User> userToBeShown = userR.findByName(name);
-        if (userToBeShown.isPresent()) {
-            return convertToUserDTO(userToBeShown.get());
-        }
-        return convertToUserDTO(new User());
+    @Transactional(readOnly = true)
+    public List<BookcaseEntryDTO> showUserBookcase(User user) {
+        return bookCER.findAllByUser(user).stream()
+                .map(entry -> new BookcaseEntryDTO(
+                        entry.getId(),
+                        convertBookToDTO(entry.getBook()),
+                        entry.getReadingStatus().name(),
+                        entry.getReview(),
+                        entry.getAddedAt()
+                ))
+                .toList();
     }
 
-    public List<BookDTO> showUserBookcase(User u) {
-        return userR.getUserBookcase(u.getId());
+    public BookcaseEntryDTO showBookFromUserBookcase(User user, Long entryId) {
+        return user.getBookcase().stream()
+                .filter(entry -> entry.getId().equals(entryId))
+                .findFirst()
+                .map(entry -> new BookcaseEntryDTO(
+                        entry.getId(),
+                        convertBookToDTO(entry.getBook()),
+                        entry.getReadingStatus().name(),
+                        entry.getReview(),
+                        entry.getAddedAt()
+                ))
+                .orElseThrow(() -> new EntityNotFoundException("Book not found in your bookcase."));
     }
 
     @Transactional
@@ -142,6 +157,18 @@ public class UserService {
                 u.getBirth().toString(),
                 u.getGender().toString(),
                 u.getSelfDescription()
+        );
+    }
+
+    private BookDTO convertBookToDTO(Book b) {
+        return new BookDTO(
+                b.getId(),
+                b.getTitle(),
+                b.getAuthor().getName(),
+                b.getDescription(),
+                b.getPublishedDate(),
+                b.getPagesNumber(),
+                b.getCoverLink()
         );
     }
 

@@ -1,7 +1,6 @@
 package eltons.books.services;
 
 import eltons.books.DTOs.BookDTO;
-import eltons.books.DTOs.BookSaveRequestDTO;
 import eltons.books.components.ApiGetter;
 import eltons.books.components.DataConverter;
 import eltons.books.models.Author;
@@ -63,9 +62,9 @@ public class BookService {
                 .orElseThrow(() -> new EntityNotFoundException("Book not found."));
     }
 
-    public Book saveBook(BookSaveRequestDTO dto) {
+    public Book saveBook(BookDTO dto) {
         return bookR.findByTitle(dto.title())
-                .orElseGet(() -> bookR.save(convertFromBookSaveRequestDTO(dto)));
+                .orElseGet(() -> bookR.save(convertBookDTOToBook(dto)));
     }
 
     public void deleteBookById(Long id) {
@@ -82,10 +81,8 @@ public class BookService {
     }
 
     public List<Book> searchBooksByAuthor(String authorName) {
-        String encodedAuthorName = URLEncoder.encode(
-                authorName.toLowerCase().replace(" ", "+"), StandardCharsets.UTF_8
-        );
-        var json = apiGetter.getData(apiUrl + "inauthor:" + authorName + apiKey);
+        String correctedAuthorName = authorName.toLowerCase().replace(" ", "+");
+        var json = apiGetter.getData(apiUrl + "inauthor:" + correctedAuthorName + apiKey);
         BookResponse bookResponse = converter.getData(json, BookResponse.class);
         List<Book> books = convertToBook(bookResponse);
 
@@ -104,6 +101,7 @@ public class BookService {
 
     private BookDTO convertBookToDTO(Book b) {
         return new BookDTO(
+                b.getId(),
                 b.getTitle(),
                 b.getAuthor().getName(),
                 b.getDescription(),
@@ -113,12 +111,12 @@ public class BookService {
         );
     }
 
-    private Book convertFromBookSaveRequestDTO(BookSaveRequestDTO dto) {
+    private Book convertBookDTOToBook(BookDTO dto) {
         return new Book(
                 verifyTitle(dto.title()),
                 verifyAuthor(dto.author()),
                 verifyDescription(dto.description()),
-                verifyPublishedDate(dto.publishedDate()),
+                dto.publishedDate(),
                 verifyPagesNumber(dto.pagesNumber()),
                 dto.coverLink()
         );

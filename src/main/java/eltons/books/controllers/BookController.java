@@ -1,20 +1,17 @@
 package eltons.books.controllers;
 
 import eltons.books.DTOs.BookDTO;
-import eltons.books.DTOs.BookSaveRequestDTO;
 import eltons.books.models.Book;
+import eltons.books.models.BookcaseEntry;
 import eltons.books.services.BookService;
 import jakarta.persistence.EntityNotFoundException;
-import org.springframework.dao.DataAccessException;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.RequestEntity;
 import org.springframework.http.ResponseEntity;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.server.MissingRequestValueException;
 
+import java.util.Collections;
 import java.util.List;
-import java.util.Optional;
 
 @RestController
 @RequestMapping("/books")
@@ -49,21 +46,22 @@ public class BookController {
         return ResponseEntity.ok(foundBook);
     }
 
-    @Transactional
-    @PostMapping("/save")
-    public ResponseEntity<String> saveBook(@RequestBody BookSaveRequestDTO dto) {
-        try {
-            Book saved = bookS.saveBook(dto);
-            return ResponseEntity.status(HttpStatus.CREATED)
-                    .body("Book saved! -> " + saved);
-        } catch (IndexOutOfBoundsException e) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-                    .body("Invalid book index.");
-        } catch (RuntimeException e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body("Failed to save book.");
-        }
-    }
+//    @Transactional
+//    @PostMapping("/savebook")
+//    public ResponseEntity<BookDTO> saveBook(@RequestBody BookDTO dto) {
+//        try {
+//            Book saved = bookS.saveBook(dto);
+//            BookDTO bookToBeShown = bookS.showFoundBooksAsDTO(Collections.singletonList(saved)).getFirst();
+//            return ResponseEntity.status(HttpStatus.CREATED)
+//                    .body(bookToBeShown);
+//        } catch (IndexOutOfBoundsException e) {
+//            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+//                    .body(new BookDTO());
+//        } catch (RuntimeException e) {
+//            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+//                    .body("Failed to save book.");
+//        }
+//    }
 
     @Transactional
     @DeleteMapping("/delete/{id}")
