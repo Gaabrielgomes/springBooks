@@ -1,4 +1,3 @@
-// src/pages/BookcasePage.jsx
 import { useNavigate, Link } from "react-router-dom";
 import { useAuth } from "../hooks/useAuth";
 import { useBookcase } from "../hooks/useBookcase";
@@ -15,9 +14,9 @@ function getBookColor(index) {
 
 function StatusBadge({ status }) {
     const labels = {
-        WANT_TO_READ: "Quero ler",
-        READING:      "Lendo",
-        FINISHED:     "Lido"
+        WANT_TO_READ: "Want to Read",
+        READING:      "Reading",
+        FINISHED:     "Finished"
     };
 
     return (
@@ -28,21 +27,28 @@ function StatusBadge({ status }) {
 }
 
 function BookCard({ entry, index, onRemove, onStatusChange }) {
-    const color = getBookColor(index);
+    const fallbackColor = getBookColor(index);
+    const hasCover = entry.book.coverLink &&
+                     entry.book.coverLink !== "No cover link found.";
 
     return (
         <div className="bookcase-book-wrapper">
 
-            {/* Espinha do livro — efeito estante */}
             <div
                 className="bookcase-spine"
-                style={{ background: color }}
+                style={hasCover
+                    ? { backgroundImage: `url(${entry.book.coverLink})`,
+                        backgroundSize: "cover",
+                        backgroundPosition: "center" }
+                    : { background: fallbackColor }
+                }
                 title={entry.book.title}
             >
-                <span className="spine-title">{entry.book.title}</span>
+                {!hasCover && (
+                    <span className="spine-title">{entry.book.title}</span>
+                )}
             </div>
 
-            {/* Card de detalhes — aparece no hover */}
             <div className="bookcase-detail">
                 <h3>{entry.book.title}</h3>
                 <p className="detail-author">{entry.book.authorName}</p>
@@ -54,9 +60,9 @@ function BookCard({ entry, index, onRemove, onStatusChange }) {
                     value={entry.readingStatus}
                     onChange={e => onStatusChange(entry.id, e.target.value)}
                 >
-                    <option value="WANT_TO_READ">Quero ler</option>
-                    <option value="READING">Lendo</option>
-                    <option value="FINISHED">Lido</option>
+                    <option value="WANT_TO_READ">Want to Read</option>
+                    <option value="READING">Reading</option>
+                    <option value="FINISHED">Finished</option>
                 </select>
 
                 {entry.review && (
@@ -67,7 +73,7 @@ function BookCard({ entry, index, onRemove, onStatusChange }) {
                     className="remove-btn"
                     onClick={() => onRemove(entry.book.id)}
                 >
-                    Remover
+                    Remove
                 </button>
             </div>
 
@@ -85,9 +91,8 @@ export function BookcasePage() {
         navigate("/login");
     }
 
-    // Status change será implementado quando o endpoint existir no back-end
     function handleStatusChange(entryId, newStatus) {
-        console.log("Mudar status:", entryId, newStatus);
+        console.log("Change status:", entryId, newStatus);
     }
 
     return (
@@ -107,17 +112,17 @@ export function BookcasePage() {
             <main className="bookcase-main">
 
                 <div className="bookcase-top">
-                    <h2>Minha estante</h2>
-                    <p>{bookcase.length} {bookcase.length === 1 ? "livro" : "livros"}</p>
+                    <h2>My bookcase</h2>
+                    <p>{bookcase.length} {bookcase.length === 1 ? "book" : "books"}</p>
                 </div>
 
-                {loading && <p className="bookcase-feedback">Loading bookcase...</p>}
+                {loading && <p className="bookcase-feedback">Loading...</p>}
                 {error   && <p className="bookcase-feedback error">{error}</p>}
 
                 {!loading && !error && bookcase.length === 0 && (
                     <div className="bookcase-empty">
-                        <p>Sua estante está vazia.</p>
-                        <Link to="/search">Buscar livros para adicionar</Link>
+                        <p>Your bookcase is empty.</p>
+                        <Link to="/search">Search for books to add</Link>
                     </div>
                 )}
 

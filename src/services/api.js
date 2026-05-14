@@ -44,7 +44,7 @@ export async function register(name, password, birth, gender, selfDescription) {
 
 export async function searchBooksByTitle(title) {
     const response = await fetch(
-        `${BASE_URL}/books/search/byTitle?title=${encodeURIComponent(title)}`,
+        `${BASE_URL}/books/search/bytitle?title=${encodeURIComponent(title)}`,
         { ...withCredentials, method: "GET" }
     );
 
@@ -54,7 +54,7 @@ export async function searchBooksByTitle(title) {
 
 export async function searchBooksByAuthor(authorName) {
     const response = await fetch(
-        `${BASE_URL}/books/search/byAuthor?authorName=${encodeURIComponent(authorName)}`,
+        `${BASE_URL}/books/search/byauthor?authorName=${encodeURIComponent(authorName)}`,
         { ...withCredentials, method: "GET" }
     );
 
@@ -72,18 +72,18 @@ export async function getAllBooks() {
 }
 
 export async function saveBook(bookDTO) {
-    const response = await fetch(`${BASE_URL}/books`, {
+    const response = await fetch(`${BASE_URL}/books/savebook`, {
         method: "POST",
         ...withCredentials,
         body: JSON.stringify(bookDTO)
     });
 
     if (!response.ok) throw new Error("Failed to save book.");
-    return response.text();
+    return response.json();
 }
 
 export async function deleteBook(bookId) {
-    const response = await fetch(`${BASE_URL}/books/${bookId}`, {
+    const response = await fetch(`${BASE_URL}/books/delete/${bookId}`, {
         method: "DELETE",
         ...withCredentials
     });
@@ -93,7 +93,7 @@ export async function deleteBook(bookId) {
 }
 
 export async function getMyProfile() {
-    const response = await fetch(`${BASE_URL}/user/me`,
+    const response = await fetch(`${BASE_URL}/user`,
         { ...withCredentials, method: "GET" }
     );
 
@@ -102,7 +102,7 @@ export async function getMyProfile() {
 }
 
 export async function getMyBookcase() {
-    const response = await fetch(`${BASE_URL}/user/me/bookcase`,
+    const response = await fetch(`${BASE_URL}/user/bookcase`,
         { ...withCredentials, method: "GET" }
     );
 
@@ -111,7 +111,7 @@ export async function getMyBookcase() {
 }
 
 export async function addBookToBookcase(bookId) {
-    const response = await fetch(`${BASE_URL}/user/me/bookcase/${bookId}`, {
+    const response = await fetch(`${BASE_URL}/user/bookcase/addbook/${bookId}`, {
         method: "POST",
         ...withCredentials
     });
@@ -121,7 +121,7 @@ export async function addBookToBookcase(bookId) {
 }
 
 export async function removeBookFromBookcase(bookId) {
-    const response = await fetch(`${BASE_URL}/user/me/bookcase/${bookId}`, {
+    const response = await fetch(`${BASE_URL}/user/bookcase/removebook/${bookId}`, {
         method: "DELETE",
         ...withCredentials
     });

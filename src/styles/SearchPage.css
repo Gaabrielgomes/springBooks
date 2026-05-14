@@ -1,0 +1,226 @@
+/* src/styles/SearchPage.css */
+.search-container {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+}
+
+.search-main {
+    flex: 1;
+    padding: 2.5rem;
+    max-width: 1000px;
+    margin: 0 auto;
+    width: 100%;
+}
+
+.search-top {
+    margin-bottom: 1.75rem;
+}
+
+.search-top h2 {
+    font-size: 1.5rem;
+    font-weight: 600;
+}
+
+/* Formulário */
+.search-form {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    margin-bottom: 2rem;
+}
+
+.search-mode {
+    display: flex;
+    gap: 0.5rem;
+}
+
+.mode-btn {
+    background: none;
+    border: 1px solid var(--color-border);
+    color: var(--color-text-secondary);
+    padding: 0.45rem 1.1rem;
+    border-radius: 999px;
+    font-size: 0.875rem;
+    transition: all 0.15s;
+}
+
+.mode-btn:hover {
+    border-color: var(--navy);
+    color: var(--navy);
+}
+
+.mode-btn.active {
+    background: var(--navy);
+    border-color: var(--navy);
+    color: #fff;
+}
+
+.search-input-row {
+    display: flex;
+    gap: 0.75rem;
+}
+
+.search-input-row input {
+    flex: 1;
+    border-radius: var(--radius-sm);
+}
+
+.search-btn {
+    background: var(--terracotta);
+    color: #fff;
+    font-weight: 500;
+    padding: 0.65rem 1.5rem;
+    border-radius: var(--radius-sm);
+    white-space: nowrap;
+    transition: background 0.15s;
+}
+
+.search-btn:hover:not(:disabled) {
+    background: var(--terracotta-light);
+}
+
+/* Feedback */
+.search-feedback {
+    font-size: 0.9rem;
+    margin-bottom: 1.5rem;
+    padding: 0.65rem 1rem;
+    border-radius: var(--radius-sm);
+}
+
+.search-feedback.success {
+    background: #eaf3de;
+    color: #3b6d11;
+    border: 1px solid #c0dd97;
+}
+
+.search-feedback.error {
+    background: #fcebeb;
+    color: var(--color-error);
+    border: 1px solid #f7c1c1;
+}
+
+.search-empty {
+    text-align: center;
+    color: var(--color-text-muted);
+    margin-top: 3rem;
+}
+
+/* Resultados */
+.search-results {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+.book-result-card {
+    display: flex;
+    gap: 1.25rem;
+    background: var(--color-surface);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-lg);
+    padding: 1.25rem;
+    transition: border-color 0.15s, transform 0.15s;
+}
+
+.book-result-card:hover {
+    border-color: var(--terracotta);
+    transform: translateX(4px);
+}
+
+/* Capa */
+.book-result-cover {
+    width: 80px;
+    min-width: 80px;
+    height: 120px;
+    border-radius: 3px 6px 6px 3px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+    border: 0.5px solid rgba(0,0,0,0.1);
+}
+
+.book-result-cover-title {
+    writing-mode: vertical-rl;
+    text-orientation: mixed;
+    transform: rotate(180deg);
+    font-size: 10px;
+    font-weight: 500;
+    color: rgba(255,255,255,0.9);
+    padding: 6px 3px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    max-height: 110px;
+}
+
+/* Info */
+.book-result-info {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 0.4rem;
+}
+
+.book-result-info h3 {
+    font-size: 1rem;
+    font-weight: 500;
+    line-height: 1.4;
+    color: var(--color-text-primary);
+}
+
+.book-result-author {
+    font-size: 0.875rem;
+    color: var(--terracotta);
+    font-weight: 500;
+}
+
+.book-result-desc {
+    font-size: 0.85rem;
+    color: var(--color-text-secondary);
+    line-height: 1.5;
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+}
+
+.book-result-meta {
+    display: flex;
+    gap: 1rem;
+    font-size: 0.8rem;
+    color: var(--color-text-muted);
+    margin-top: 0.25rem;
+}
+
+.add-btn {
+    margin-top: auto;
+    align-self: flex-start;
+    background: var(--navy);
+    color: #fff;
+    font-size: 0.875rem;
+    padding: 0.5rem 1.1rem;
+    border-radius: var(--radius-sm);
+    transition: background 0.15s;
+}
+
+.add-btn:hover {
+    background: var(--navy-light);
+}
+
+@media (max-width: 600px) {
+    .search-main {
+        padding: 1.5rem 1rem;
+    }
+
+    .book-result-card {
+        flex-direction: column;
+    }
+
+    .book-result-cover {
+        width: 100%;
+        height: 180px;
+        border-radius: var(--radius-sm);
+    }
+}

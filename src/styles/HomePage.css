@@ -9,14 +9,14 @@
     align-items: center;
     justify-content: space-between;
     padding: 1.25rem 2.5rem;
-    background: var(--color-surface);
-    border-bottom: 1px solid var(--color-border);
+    background: var(--navy);
+    border-bottom: 3px solid var(--terracotta);
 }
 
 .home-header h1 {
     font-size: 1.3rem;
     font-weight: 600;
-    color: var(--color-accent);
+    color: var(--terracotta-light);
 }
 
 .home-nav {
@@ -27,19 +27,21 @@
 
 .home-nav a {
     font-size: 0.95rem;
-    color: var(--color-text-secondary);
+    color: rgba(255,255,255,0.7);
     text-decoration: none;
     transition: color 0.15s;
 }
 
 .home-nav a:hover {
-    color: var(--color-accent);
+    color: #fff;
+    text-decoration: none;
 }
 
 .logout-btn {
     background: none;
     border: 1px solid var(--color-border);
-    color: var(--color-text-secondary);
+    border-color: rgba(255,255,255,0.3);
+    color: rgba(255,255,255,0.7);
     font-size: 0.9rem;
     padding: 0.4rem 1rem;
     border-radius: var(--radius-sm);
@@ -47,8 +49,8 @@
 }
 
 .logout-btn:hover {
-    border-color: var(--color-error);
-    color: var(--color-error);
+    border-color: var(--terracotta-light);
+    color: var(--terracotta-light);
 }
 
 .home-main {
@@ -90,7 +92,7 @@
 }
 
 .home-card:hover {
-    border-color: var(--color-accent);
+    border-color: var(--terracotta);
     transform: translateY(-3px);
 }
 

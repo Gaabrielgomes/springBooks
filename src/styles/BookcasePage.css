@@ -53,28 +53,45 @@
 }
 
 .bookcase-shelf {
-    display: flex;
-    align-items: flex-end;
-    padding: 1rem 1.5rem 0;
-    background: var(--color-surface);
-    border: 1px solid var(--color-border);
+    background-color: var(--wood-mid);
+    background-image:
+        repeating-linear-gradient(
+            88deg,
+            transparent,
+            transparent 3px,
+            rgba(255,255,255,0.04) 3px,
+            rgba(255,255,255,0.04) 6px
+        ),
+        repeating-linear-gradient(
+            180deg,
+            transparent,
+            transparent 12px,
+            rgba(0,0,0,0.06) 12px,
+            rgba(0,0,0,0.06) 13px
+        );
+    border: 1px solid var(--wood-dark);
     border-bottom: none;
     border-radius: var(--radius-lg) var(--radius-lg) 0 0;
-    min-height: 200px;
-    overflow-x: auto;
-    gap: 0;
 }
 
 .shelf-floor {
-    height: 12px;
-    background: var(--color-border);
+    background-color: var(--wood-dark);
+    background-image:
+        repeating-linear-gradient(
+            90deg,
+            transparent,
+            transparent 4px,
+            rgba(255,255,255,0.05) 4px,
+            rgba(255,255,255,0.05) 8px
+        );
+    height: 14px;
     border-radius: 0 0 var(--radius-lg) var(--radius-lg);
 }
 
 /* Livro */
 .bookcase-book-wrapper {
     position: relative;
-    margin-right: -18px;
+    margin-right: -28px;
     z-index: 1;
     transition: z-index 0s;
 }
@@ -88,15 +105,16 @@
 }
 
 .bookcase-spine {
-    width: 52px;
-    height: 155px;
+    width: 90px;
+    height: 135px;
     border-radius: 3px 6px 6px 3px;
     cursor: pointer;
     transition: transform 0.2s ease;
+    border: 0.5px solid rgba(0,0,0,0.08);
+    overflow: hidden;
     display: flex;
     align-items: center;
     justify-content: center;
-    border: 0.5px solid rgba(0,0,0,0.08);
 }
 
 .bookcase-book-wrapper:hover .bookcase-spine {
