@@ -30,8 +30,12 @@ public class BookController {
 
     @GetMapping("/search/bytitle")
     public ResponseEntity<List<BookDTO>> searchBookByTitle(@RequestParam String title) {
-        List<Book> foundBooks = bookS.searchBookByTitle(title);
-        return ResponseEntity.ok(bookS.showFoundBooksAsDTO(foundBooks));
+        try {
+            List<Book> foundBooks = bookS.searchBookByTitle(title);
+            return ResponseEntity.ok(bookS.showFoundBooksAsDTO(foundBooks));
+        } catch (EntityNotFoundException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
+        }
     }
 
     @GetMapping("/search/byauthor")
@@ -46,22 +50,22 @@ public class BookController {
         return ResponseEntity.ok(foundBook);
     }
 
-//    @Transactional
-//    @PostMapping("/savebook")
-//    public ResponseEntity<BookDTO> saveBook(@RequestBody BookDTO dto) {
-//        try {
-//            Book saved = bookS.saveBook(dto);
-//            BookDTO bookToBeShown = bookS.showFoundBooksAsDTO(Collections.singletonList(saved)).getFirst();
-//            return ResponseEntity.status(HttpStatus.CREATED)
-//                    .body(bookToBeShown);
-//        } catch (IndexOutOfBoundsException e) {
-//            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-//                    .body(new BookDTO());
-//        } catch (RuntimeException e) {
-//            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-//                    .body("Failed to save book.");
-//        }
-//    }
+    @Transactional
+    @PostMapping("/savebook")
+    public ResponseEntity<BookDTO> saveBook(@RequestBody BookDTO dto) {
+        try {
+            Book saved = bookS.saveBook(dto);
+            BookDTO bookToBeShown = bookS.showFoundBooksAsDTO(Collections.singletonList(saved)).getFirst();
+            return ResponseEntity.status(HttpStatus.CREATED)
+                    .body(bookToBeShown);
+        } catch (IndexOutOfBoundsException e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                    .body(null);
+        } catch (RuntimeException e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(null);
+        }
+    }
 
     @Transactional
     @DeleteMapping("/delete/{id}")

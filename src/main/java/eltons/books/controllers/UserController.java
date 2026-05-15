@@ -46,8 +46,8 @@ public class UserController {
     @PostMapping("/bookcase/addbook/{bookId}")
     public ResponseEntity<BookcaseEntry> addBookToBookcase(@PathVariable Long bookId) {
         User user = getAuthenticatedUser();
-        userS.addBookToBookcase(user, bookId);
-        return ResponseEntity.status(HttpStatus.CREATED).body();
+        BookcaseEntry entry = userS.addBookToBookcase(user, bookId);
+        return ResponseEntity.status(HttpStatus.CREATED).body(entry);
     }
 
     @Transactional

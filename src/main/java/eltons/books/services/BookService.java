@@ -3,10 +3,7 @@ package eltons.books.services;
 import eltons.books.DTOs.BookDTO;
 import eltons.books.components.ApiGetter;
 import eltons.books.components.DataConverter;
-import eltons.books.models.Author;
-import eltons.books.models.Book;
-import eltons.books.models.BookResponse;
-import eltons.books.models.ImageLinks;
+import eltons.books.models.*;
 import eltons.books.repositories.AuthorRepository;
 import eltons.books.repositories.BookRepository;
 import jakarta.persistence.EntityNotFoundException;
@@ -76,21 +73,31 @@ public class BookService {
                 title.toLowerCase().replace(" ", "+"), StandardCharsets.UTF_8
         );
         var json = apiGetter.getData(apiUrl + encodedTitle + apiKey);
-        BookResponse foundBooks = converter.getData(json, BookResponse.class);
-        return convertToBook(foundBooks);
+        BookResponse bookResponse = converter.getData(json, BookResponse.class);
+        List<Book> convertedBooks = convertToBook(bookResponse);
+
+        if (bookResponse == null) {
+            List<Item> items = bookResponse.getItems();
+            if (items != null || !items.isEmpty()) {
+                throw new EntityNotFoundException("No books found for the search.");
+            }
+        }
+
+        return convertedBooks;
     }
 
     public List<Book> searchBooksByAuthor(String authorName) {
         String correctedAuthorName = authorName.toLowerCase().replace(" ", "+");
-        var json = apiGetter.getData(apiUrl + "inauthor:" + correctedAuthorName + apiKey);
+        var json = apiGetter.getData(apiUrl + "+inauthor:" + correctedAuthorName + apiKey);
         BookResponse bookResponse = converter.getData(json, BookResponse.class);
-        List<Book> books = convertToBook(bookResponse);
 
-        if (books == null || books.isEmpty()) {
-            throw new EntityNotFoundException("No books found for this author.");
+        if (bookResponse == null) {
+            List<Item> items = bookResponse.getItems();
+            if (items != null || !items.isEmpty()) {
+                throw new EntityNotFoundException("No books found for this author.");
+            }
         }
-
-        return books;
+        return convertToBook(bookResponse);
     }
 
     public List<BookDTO> showFoundBooksAsDTO(List<Book> books) {
