@@ -32,7 +32,7 @@ export function LoginPage() {
             <div className="login-card">
 
                 <div className="login-header">
-                    <h1>Elton's Books</h1>
+                    <h1>Eltons' Books</h1>
                     <p>Sign in to your account</p>
                 </div>
 

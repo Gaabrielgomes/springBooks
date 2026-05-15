@@ -54,7 +54,7 @@ export function RegisterPage() {
             <div className="register-card">
 
                 <div className="register-header">
-                    <h1>Elton's Books</h1>
+                    <h1>Eltons' Books</h1>
                     <p>Create your account</p>
                 </div>
 

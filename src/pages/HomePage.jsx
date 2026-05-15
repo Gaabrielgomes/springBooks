@@ -15,7 +15,7 @@ export function HomePage() {
         <div className="home-container">
 
             <header className="home-header">
-                <h1>Elton's Books</h1>
+                <h1>Eltons' Books</h1>
                 <nav className="home-nav">
                     <Link to="/search">Search Books</Link>
                     <Link to="/bookcase">My Bookcase</Link>

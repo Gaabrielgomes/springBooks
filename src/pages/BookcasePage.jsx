@@ -94,7 +94,7 @@ export function BookcasePage() {
         <div className="bookcase-container">
 
             <header className="home-header">
-                <h1>Elton's Books</h1>
+                <h1>Eltons' Books</h1>
                 <nav className="home-nav">
                     <Link to="/search">Search nooks</Link>
                     <Link to="/bookcase">My bookcase</Link>
