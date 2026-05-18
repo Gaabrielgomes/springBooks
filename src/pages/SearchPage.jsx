@@ -1,3 +1,66 @@
+import { useState } from "react";
+import { useNavigate, Link } from "react-router-dom";
+import { useAuth } from "../hooks/useAuth";
+import { useSearch } from "../hooks/useSearch";
+import { useBookcase } from "../hooks/useBookcase";
+import "../styles/SearchPage.css";
+
+const BOOK_COLORS = [
+    "#534AB7", "#3B6D11", "#993C1D", "#185FA5", "#854F0B",
+    "#993556", "#0F6E56", "#5F5E5A", "#A32D2D", "#3C3489"
+];
+
+function getBookColor(index) {
+    return BOOK_COLORS[index % BOOK_COLORS.length];
+}
+
+function BookResult({ book, index, onSaveAndAdd }) {
+    const hasCover = book.coverLink &&
+                     book.coverLink !== "No cover link found.";
+
+    return (
+        <div className="book-result-card">
+
+            <div
+                className="book-result-cover"
+                style={hasCover
+                    ? { backgroundImage: `url(${book.coverLink})`,
+                        backgroundSize: "cover",
+                        backgroundPosition: "center" }
+                    : { background: getBookColor(index) }
+                }
+            >
+                {!hasCover && (
+                    <span className="book-result-cover-title">{book.title}</span>
+                )}
+            </div>
+
+            <div className="book-result-info">
+                <h3>{book.title}</h3>
+                <p className="book-result-author">{book.authorName}</p>
+                <p className="book-result-desc">{book.description}</p>
+
+                <div className="book-result-meta">
+                    {book.publishedDate && (
+                        <span>{new Date(book.publishedDate).getFullYear()}</span>
+                    )}
+                    {book.pagesNumber && book.pagesNumber > 1 && (
+                        <span>{book.pagesNumber} pages</span>
+                    )}
+                </div>
+
+                <button
+                    className="add-btn"
+                    onClick={() => onSaveAndAdd(book)}
+                >
+                    + Add to Bookcase
+                </button>
+            </div>
+
+        </div>
+    );
+}
+
 export function SearchPage() {
     const { logout } = useAuth();
     const { results, loading, error, searchByTitle, searchByAuthor, save } = useSearch();
@@ -5,7 +68,7 @@ export function SearchPage() {
     const navigate = useNavigate();
 
     const [query, setQuery]   = useState("");
-    const [mode, setMode]     = useState("title");
+    const [mode, setMode]     = useState("title"); // "title" | "author"
     const [feedback, setFeedback] = useState(null);
 
     async function handleSearch(e) {
@@ -41,7 +104,7 @@ export function SearchPage() {
         <div className="search-container">
 
             <header className="home-header">
-                <h1>Eltons' Books</h1>
+                <h1>Elton's Books</h1>
                 <nav className="home-nav">
                     <Link to="/search">Search Books</Link>
                     <Link to="/bookcase">My Bookcase</Link>
