@@ -12,78 +12,36 @@ function getBookColor(index) {
     return BOOK_COLORS[index % BOOK_COLORS.length];
 }
 
-function StatusBadge({ status }) {
-    const labels = {
-        WANT_TO_READ: "Want to Read",
-        READING:      "Reading",
-        FINISHED:     "Finished"
-    };
-
-    return (
-        <span className={`status-badge status-${status.toLowerCase()}`}>
-            {labels[status]}
-        </span>
-    );
-}
-
-function BookCard({ entry, index, onRemove, onStatusChange }) {
-    const fallbackColor = getBookColor(index);
+function BookSpine({ entry, index, onClick }) {
     const hasCover = entry.book.coverLink &&
                      entry.book.coverLink !== "No cover link found.";
 
     return (
-        <div className="bookcase-book-wrapper">
-
+        <div
+            className="bookcase-book-wrapper"
+            onClick={() => onClick(entry.id)}
+            title={entry.book.title}
+        >
             <div
                 className="bookcase-spine"
                 style={hasCover
                     ? { backgroundImage: `url(${entry.book.coverLink})`,
                         backgroundSize: "cover",
                         backgroundPosition: "center" }
-                    : { background: fallbackColor }
+                    : { background: getBookColor(index) }
                 }
-                title={entry.book.title}
             >
                 {!hasCover && (
                     <span className="spine-title">{entry.book.title}</span>
                 )}
             </div>
-
-            <div className="bookcase-detail">
-                <h3>{entry.book.title}</h3>
-                <p className="detail-author">{entry.book.authorName}</p>
-
-                <StatusBadge status={entry.readingStatus} />
-
-                <select
-                    className="status-select"
-                    value={entry.readingStatus}
-                    onChange={e => onStatusChange(entry.id, e.target.value)}
-                >
-                    <option value="WANT_TO_READ">Want to Read</option>
-                    <option value="READING">Reading</option>
-                    <option value="FINISHED">Finished</option>
-                </select>
-
-                {entry.review && (
-                    <p className="detail-review">"{entry.review}"</p>
-                )}
-
-                <button
-                    className="remove-btn"
-                    onClick={() => onRemove(entry.book.id)}
-                >
-                    Remove
-                </button>
-            </div>
-
         </div>
     );
 }
 
 export function BookcasePage() {
-    const { user, logout } = useAuth();
-    const { bookcase, loading, error, removeBook } = useBookcase();
+    const { logout } = useAuth();
+    const { bookcase, loading, error } = useBookcase();
     const navigate = useNavigate();
 
     async function handleLogout() {
@@ -91,8 +49,8 @@ export function BookcasePage() {
         navigate("/login");
     }
 
-    function handleStatusChange(entryId, newStatus) {
-        console.log("Change status:", entryId, newStatus);
+    function handleBookClick(entryId) {
+        navigate(`/bookcase/showbook/${entryId}`);
     }
 
     return (
@@ -101,10 +59,10 @@ export function BookcasePage() {
             <header className="home-header">
                 <h1>Elton's Books</h1>
                 <nav className="home-nav">
-                    <Link to="/search">Search nooks</Link>
-                    <Link to="/bookcase">My bookcase</Link>
+                    <Link to="/search">Buscar livros</Link>
+                    <Link to="/bookcase">Minha estante</Link>
                     <button onClick={handleLogout} className="logout-btn">
-                        Logout
+                        Sair
                     </button>
                 </nav>
             </header>
@@ -112,17 +70,17 @@ export function BookcasePage() {
             <main className="bookcase-main">
 
                 <div className="bookcase-top">
-                    <h2>My bookcase</h2>
-                    <p>{bookcase.length} {bookcase.length === 1 ? "book" : "books"}</p>
+                    <h2>Minha estante</h2>
+                    <p>{bookcase.length} {bookcase.length === 1 ? "livro" : "livros"}</p>
                 </div>
 
-                {loading && <p className="bookcase-feedback">Loading...</p>}
+                {loading && <p className="bookcase-feedback">Carregando sua estante...</p>}
                 {error   && <p className="bookcase-feedback error">{error}</p>}
 
                 {!loading && !error && bookcase.length === 0 && (
                     <div className="bookcase-empty">
-                        <p>Your bookcase is empty.</p>
-                        <Link to="/search">Search for books to add</Link>
+                        <p>Sua estante está vazia.</p>
+                        <Link to="/search">Buscar livros para adicionar</Link>
                     </div>
                 )}
 
@@ -130,12 +88,11 @@ export function BookcasePage() {
                     <div className="bookcase-shelf-wrapper">
                         <div className="bookcase-shelf">
                             {bookcase.map((entry, index) => (
-                                <BookCard
+                                <BookSpine
                                     key={entry.id}
                                     entry={entry}
                                     index={index}
-                                    onRemove={removeBook}
-                                    onStatusChange={handleStatusChange}
+                                    onClick={handleBookClick}
                                 />
                             ))}
                         </div>

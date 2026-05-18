@@ -136,7 +136,7 @@
 }
 
 /* Card de detalhes no hover */
-.bookcase-detail {
+/* .bookcase-detail {
     position: absolute;
     bottom: calc(100% + 8px);
     left: 50%;
@@ -154,9 +154,9 @@
     display: flex;
     flex-direction: column;
     gap: 0.5rem;
-}
+} */
 
-.bookcase-book-wrapper:hover .bookcase-detail {
+/* .bookcase-book-wrapper:hover .bookcase-detail {
     opacity: 1;
     pointer-events: all;
 }
@@ -180,13 +180,13 @@
 }
 
 /* Status badge */
-.status-badge {
+/* .status-badge {
     font-size: 0.75rem;
     font-weight: 500;
     padding: 0.2rem 0.6rem;
     border-radius: 999px;
     align-self: flex-start;
-}
+} */ */
 
 .status-badge.status-want_to_read {
     background: #e6f1fb;
@@ -222,7 +222,7 @@
 }
 
 /* Botão remover */
-.remove-btn {
+/* .remove-btn {
     width: 100%;
     background: none;
     border: 1px solid var(--color-border);
@@ -232,6 +232,37 @@
     border-radius: var(--radius-sm);
     margin-top: 0.25rem;
     transition: background 0.15s, border-color 0.15s;
+} */
+
+.bookcase-book-wrapper {
+    position: relative;
+    margin-right: -28px;
+    z-index: 1;
+    cursor: pointer;
+}
+
+.bookcase-book-wrapper:last-child {
+    margin-right: 0;
+}
+
+.bookcase-book-wrapper:hover {
+    z-index: 10;
+}
+
+.bookcase-spine {
+    width: 90px;
+    height: 135px;
+    border-radius: 3px 6px 6px 3px;
+    transition: transform 0.2s ease;
+    border: 0.5px solid rgba(0,0,0,0.08);
+    overflow: hidden;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.bookcase-book-wrapper:hover .bookcase-spine {
+    transform: translateY(-20px) scale(1.04);
 }
 
 .remove-btn:hover {

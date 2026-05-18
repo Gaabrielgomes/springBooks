@@ -11,7 +11,7 @@ export default function App() {
     return (
         <BrowserRouter>
             <Routes>
-
+                
                 <Route path="/" element={<Navigate to="/home" replace />} />
 
                 <Route path="/login" element={
@@ -19,6 +19,7 @@ export default function App() {
                         <LoginPage />
                     </PublicRoute>
                 } />
+
                 <Route path="/register" element={
                     <PublicRoute>
                         <RegisterPage />
@@ -30,14 +31,22 @@ export default function App() {
                         <HomePage />
                     </ProtectedRoute>
                 } />
+                
                 <Route path="/search" element={
                     <ProtectedRoute>
                         <SearchPage />
                     </ProtectedRoute>
                 } />
+                
                 <Route path="/bookcase" element={
                     <ProtectedRoute>
                         <BookcasePage />
+                    </ProtectedRoute>
+                } />
+
+                <Route path="/bookcase/showbook/:entryId" element={
+                    <ProtectedRoute>
+                        <BookPage />
                     </ProtectedRoute>
                 } />
 
