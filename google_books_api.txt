@@ -1,2 +1,0 @@
-google_api_key = AIzaSyCx7MAr7ONvvlgUdf-X09XE1DheYDCCfx8
-api_guide = https://developers.google.com/books/docs/v1/using#PerformingSearch
