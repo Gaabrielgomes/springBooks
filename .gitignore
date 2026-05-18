@@ -4,6 +4,7 @@ target/
 !**/src/main/**/target/
 !**/src/test/**/target/
 resources/
+test/
 
 ### STS ###
 .apt_generated
