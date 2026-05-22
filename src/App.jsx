@@ -5,7 +5,10 @@ import { LoginPage } from "./pages/LoginPage";
 import { RegisterPage } from "./pages/RegisterPage";
 import { HomePage } from "./pages/HomePage";
 import { SearchPage } from "./pages/SearchPage";
+import { MainBookcasePage } from "./pages/MainBookcasePage";
 import { BookcasePage } from "./pages/BookcasePage";
+import {BookPage} from "./pages/BookPage";
+
 
 export default function App() {
     return (
@@ -38,6 +41,12 @@ export default function App() {
                     </ProtectedRoute>
                 } />
                 
+                <Route path="/mainbookcase" element={
+                    <ProtectedRoute>
+                        <MainBookcasePage />
+                    </ProtectedRoute>
+                } />
+
                 <Route path="/bookcase" element={
                     <ProtectedRoute>
                         <BookcasePage />

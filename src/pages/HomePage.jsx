@@ -17,7 +17,7 @@ export function HomePage() {
             <header className="home-header">
                 <h1>Elton's Books</h1>
                 <nav className="home-nav">
-                    <Link to="/search">Search Books</Link>
+                    <Link to="/">Me</Link>
                     <Link to="/bookcase">My Bookcase</Link>
                     <button onClick={handleLogout} className="logout-btn">
                         Logout
@@ -38,16 +38,25 @@ export function HomePage() {
                         onClick={() => navigate("/search")}
                     >
                         <div className="home-card-icon">🔍</div>
-                        <h3>Search Books</h3>
+                        <h3>Search books</h3>
                         <p>Find new books by title or author and add them to the central bookcase.</p>
+                    </div>
+
+                    <div
+                        className="home-card"
+                        onClick={() => navigate("/mainbookcase")}
+                    >
+                        <div className="home-card-icon">📚</div>
+                        <h3>Main bookcase</h3>
+                        <p>See the books saved in our main bookcase so you can add any that interest you to yours.</p>
                     </div>
 
                     <div
                         className="home-card"
                         onClick={() => navigate("/bookcase")}
                     >
-                        <div className="home-card-icon">📚</div>
-                        <h3>My Bookcase</h3>
+                        <div className="home-card-icon">📖</div>
+                        <h3>My bookcase</h3>
                         <p>See the books addded by you and manage your reading list.</p>
                     </div>
 

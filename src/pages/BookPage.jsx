@@ -113,9 +113,18 @@ export function BookPage() {
                             {entry.book.pagesNumber > 1 && (
                                 <span>{entry.book.pagesNumber} páginas</span>
                             )}
-                            <span className={`status-badge status-${entry.readingStatus.toLowerCase()}`}>
+                            {/* <span className={`status-badge status-${entry.readingStatus.toLowerCase()}`}>
                                 {STATUS_LABELS[entry.readingStatus]}
-                            </span>
+                            </span> */}
+                                <select
+                                    className="status-select-page"
+                                    value={entry.readingStatus}
+                                    onChange={handleStatusChange}
+                                >
+                                    <option value="WANT_TO_READ">Quero ler</option>
+                                    <option value="READING">Lendo</option>
+                                    <option value="FINISHED">Lido</option>
+                                </select>
                         </div>
 
                         {entry.book.description && (

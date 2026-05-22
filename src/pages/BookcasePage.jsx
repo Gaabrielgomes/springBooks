@@ -41,7 +41,7 @@ function BookSpine({ entry, index, onClick }) {
 
 export function BookcasePage() {
     const { logout } = useAuth();
-    const { bookcase, loading, error } = useBookcase();
+    const { bookcase, removeBook, loading, error, updateStatus, addReview } = useBookcase();
     const navigate = useNavigate();
 
     async function handleLogout() {
@@ -53,16 +53,27 @@ export function BookcasePage() {
         navigate(`/bookcase/showbook/${entryId}`);
     }
 
+    async function handleStatusChange(e) {
+        const newStatus = e.target.value;
+        try {
+            await updateStatus(entry.id, newStatus);
+            setFeedback({ type: "success", text: "Status updated!" });
+        } catch {
+            setFeedback({ type: "error", text: "Error updating status." });
+        }
+    }
+
     return (
         <div className="bookcase-container">
 
             <header className="home-header">
-                <h1>Elton's Books</h1>
+                <h1><Link to="/home">Elton's Books</Link></h1>
                 <nav className="home-nav">
-                    <Link to="/search">Buscar livros</Link>
-                    <Link to="/bookcase">Minha estante</Link>
+                    <Link to="/home">Home</Link>
+                    <Link to="/search">Search Books</Link>
+                    <Link to="/bookcase">My Bookcase</Link>
                     <button onClick={handleLogout} className="logout-btn">
-                        Sair
+                        Logout
                     </button>
                 </nav>
             </header>
@@ -70,17 +81,17 @@ export function BookcasePage() {
             <main className="bookcase-main">
 
                 <div className="bookcase-top">
-                    <h2>Minha estante</h2>
-                    <p>{bookcase.length} {bookcase.length === 1 ? "livro" : "livros"}</p>
+                    <h2>My Bookcase</h2>
+                    <p>{bookcase.length} {bookcase.length === 1 ? "book" : "books"}</p>
                 </div>
 
-                {loading && <p className="bookcase-feedback">Carregando sua estante...</p>}
+                {loading && <p className="bookcase-feedback">Loading your bookcase...</p>}
                 {error   && <p className="bookcase-feedback error">{error}</p>}
 
                 {!loading && !error && bookcase.length === 0 && (
                     <div className="bookcase-empty">
-                        <p>Sua estante está vazia.</p>
-                        <Link to="/search">Buscar livros para adicionar</Link>
+                        <p>Your bookcase is empty.</p>
+                        <Link to="/search">Search for books to add</Link>
                     </div>
                 )}
 
