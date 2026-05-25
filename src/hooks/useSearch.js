@@ -34,9 +34,11 @@ export function useSearch() {
 
     async function save(bookDTO) {
         try {
-            await saveBook(bookDTO);
+            const saved = await saveBook(bookDTO);
+            return saved;
         } catch (e) {
             setError(e.message);
+            throw e;
         }
     }
 

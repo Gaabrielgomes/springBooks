@@ -1,5 +1,8 @@
 import { useState, useEffect } from "react";
-import { getMyBookcase, addBookToBookcase, removeBookFromBookcase } from "../services/api";
+import { getMyBookcase, addBookToBookcase,
+         removeBookFromBookcase, updateReadingStatus as apiUpdateStatus,
+         addReview as apiAddReview } from "../services/api";
+
 
 export function useBookcase() {
     const [bookcase, setBookcase] = useState([]);
@@ -31,6 +34,24 @@ export function useBookcase() {
         }
     }
 
+    async function updateStatus(entryId, status) {
+        try {
+            await apiUpdateStatus(entryId, status);
+            await fetchBookcase();
+        } catch (e) {
+            setError(e.message);
+        }
+    }
+
+    async function addReview(bookId, comment) {
+        try {
+            await apiAddReview(bookId, comment);
+            await fetchBookCase();
+        } catch (e) {
+            setError(e.message);
+        }
+    }
+
     async function removeBook(bookId) {
         try {
             await removeBookFromBookcase(bookId);
@@ -40,5 +61,5 @@ export function useBookcase() {
         }
     }
 
-    return { bookcase, loading, error, addBook, removeBook };
+    return { bookcase, loading, error, addBook, removeBook, updateStatus, addReview };
 }

@@ -135,7 +135,6 @@
     max-height: 130px;
 }
 
-/* Card de detalhes no hover */
 .bookcase-detail {
     position: absolute;
     bottom: calc(100% + 8px);
@@ -232,6 +231,37 @@
     border-radius: var(--radius-sm);
     margin-top: 0.25rem;
     transition: background 0.15s, border-color 0.15s;
+}
+
+.bookcase-book-wrapper {
+    position: relative;
+    margin-right: -28px;
+    z-index: 1;
+    cursor: pointer;
+}
+
+.bookcase-book-wrapper:last-child {
+    margin-right: 0;
+}
+
+.bookcase-book-wrapper:hover {
+    z-index: 10;
+}
+
+.bookcase-spine {
+    width: 90px;
+    height: 135px;
+    border-radius: 3px 6px 6px 3px;
+    transition: transform 0.2s ease;
+    border: 0.5px solid rgba(0,0,0,0.08);
+    overflow: hidden;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.bookcase-book-wrapper:hover .bookcase-spine {
+    transform: translateY(-20px) scale(1.04);
 }
 
 .remove-btn:hover {

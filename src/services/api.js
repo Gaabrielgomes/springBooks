@@ -120,6 +120,32 @@ export async function addBookToBookcase(bookId) {
     return response.text();
 }
 
+export async function updateReadingStatus(entryId, status) {
+    const response = await fetch(`${BASE_URL}/user/bookcase/updatestatus/${entryId}`,
+        {
+            method: "PATCH",
+            ...withCredentials,
+            body: JSON.stringify(status)
+        }
+    );
+
+    if (!response.ok) throw new Error("Failed to update reading status.");
+    return response.text();
+}
+
+export async function addReview(bookId, comment) {
+    const response = await fetch(`${BASE_URL}/user/bookcase/addreview/${bookId}`,
+        {
+            method: "PATCH",
+            ...withCredentials,
+            body: JSON.stringify(comment)
+        }
+    );
+
+    if (!response.ok) throw new Error("Failed to add review.");
+    return response.text();
+}
+
 export async function removeBookFromBookcase(bookId) {
     const response = await fetch(`${BASE_URL}/user/bookcase/removebook/${bookId}`, {
         method: "DELETE",
