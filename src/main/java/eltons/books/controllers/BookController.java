@@ -50,20 +50,14 @@ public class BookController {
         return ResponseEntity.ok(foundBook);
     }
 
-    @Transactional
     @PostMapping("/savebook")
     public ResponseEntity<BookDTO> saveBook(@RequestBody BookDTO dto) {
         try {
             Book saved = bookS.saveBook(dto);
-            BookDTO bookToBeShown = bookS.showFoundBooksAsDTO(Collections.singletonList(saved)).getFirst();
             return ResponseEntity.status(HttpStatus.CREATED)
-                    .body(bookToBeShown);
-        } catch (IndexOutOfBoundsException e) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-                    .body(null);
+                    .body(bookS.showFoundBooksAsDTO(Collections.singletonList(saved)).getFirst());
         } catch (RuntimeException e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body(null);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
     }
 

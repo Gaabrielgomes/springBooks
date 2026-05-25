@@ -163,6 +163,7 @@ public class UserService {
     private BookDTO convertBookToDTO(Book b) {
         return new BookDTO(
                 b.getId(),
+                b.getIsbn(),
                 b.getTitle(),
                 b.getAuthor().getName(),
                 b.getDescription(),

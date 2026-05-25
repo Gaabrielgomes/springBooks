@@ -9,6 +9,7 @@ import java.util.List;
 @Getter
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class VolumeInfo {
+    private List<Identifiers> industryIdentifiers;
     private String title;
     private List<String> authors;
     private String description;

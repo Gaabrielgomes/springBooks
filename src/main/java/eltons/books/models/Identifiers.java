@@ -4,10 +4,10 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import lombok.Getter;
 import lombok.Setter;
 
-@Setter
 @Getter
+@Setter
 @JsonIgnoreProperties(ignoreUnknown = true)
-public class ImageLinks {
-    private String smallThumbnail;
-    private String thumbnail;
+public class Identifiers {
+    private String type;
+    private String identifier;
 }

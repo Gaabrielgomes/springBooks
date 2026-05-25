@@ -12,24 +12,18 @@ import java.time.LocalDate;
 @Setter
 @Table(name = "bookcase_entry")
 public class BookcaseEntry {
-
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-
     @ManyToOne
     @JoinColumn(name = "user_id", nullable = false)
     private User user;
-
     @ManyToOne
     @JoinColumn(name = "book_id", nullable = false)
     private Book book;
-
     private String review;
-
     @Column(name = "added_at", nullable = false, updatable = false)
     private LocalDate addedAt;
-
     @Enumerated(EnumType.STRING)
     @Column(name = "reading_status")
     private ReadingStatus readingStatus;

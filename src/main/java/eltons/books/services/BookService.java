@@ -109,6 +109,7 @@ public class BookService {
     private BookDTO convertBookToDTO(Book b) {
         return new BookDTO(
                 b.getId(),
+                b.getIsbn(),
                 b.getTitle(),
                 b.getAuthor().getName(),
                 b.getDescription(),
@@ -120,6 +121,7 @@ public class BookService {
 
     private Book convertBookDTOToBook(BookDTO dto) {
         return new Book(
+                dto.isbn(),
                 verifyTitle(dto.title()),
                 verifyAuthor(dto.author()),
                 verifyDescription(dto.description()),
@@ -131,8 +133,9 @@ public class BookService {
 
     private List<Book> convertToBook(BookResponse books) {
         return books.getItems().stream()
-                .map(item -> item.getVolumeInfo())
+                .map(Item::getVolumeInfo)
                 .map(volume -> new Book(
+                        verifyIsbn(volume.getIndustryIdentifiers()),
                         verifyTitle(volume.getTitle()),
                         verifyAuthor(getFirstAuthor(volume.getAuthors())),
                         verifyDescription(volume.getDescription()),
@@ -141,6 +144,16 @@ public class BookService {
                         verifyCoverLink(volume.getImageLinks())
                 ))
                 .collect(Collectors.toList());
+    }
+
+    private Long verifyIsbn(List<Identifiers> identifiers) {
+        if (identifiers == null || identifiers.isEmpty()) return null;
+
+        return identifiers.stream()
+                .filter(i -> i.getType().equalsIgnoreCase("isbn_13"))
+                .findFirst()
+                .map(i -> Long.parseLong(i.getIdentifier()))
+                .orElse(null);
     }
 
     private String verifyTitle(String title) {

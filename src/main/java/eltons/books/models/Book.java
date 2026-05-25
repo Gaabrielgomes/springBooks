@@ -15,6 +15,8 @@ public class Book {
         @Id
         @GeneratedValue(strategy = GenerationType.IDENTITY)
         private Long id;
+        @Column(unique = true)
+        private Long isbn;
         private String title;
         @ManyToOne(fetch = FetchType.LAZY, optional = false)
         @JoinColumn(name = "author_id", nullable = false)
@@ -26,8 +28,9 @@ public class Book {
         private String coverLink;
 
         @Builder
-        public Book(String title, Author author, String description,
+        public Book(Long isbn, String title, Author author, String description,
                     LocalDate publishedDate, Integer pagesNumber, String coverLink) {
+                this.isbn = isbn;
                 this.title = title;
                 this.author = author;
                 this.description = description;
