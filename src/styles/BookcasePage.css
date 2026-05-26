@@ -49,10 +49,15 @@
 
 /* Estante */
 .bookcase-shelf-wrapper {
-    margin-top: 1rem;
+    padding-top: 2rem;
+    overflow: visible;
 }
 
 .bookcase-shelf {
+    display: flex;
+    flex-direction: row;
+    align-items: flex-end;
+    padding: 1rem 1rem 0;
     background-color: var(--wood-mid);
     background-image:
         repeating-linear-gradient(
@@ -72,6 +77,8 @@
     border: 1px solid var(--wood-dark);
     border-bottom: none;
     border-radius: var(--radius-lg) var(--radius-lg) 0 0;
+    overflow-x: visible;
+    overflow-y: visible;
 }
 
 .shelf-floor {
@@ -91,8 +98,10 @@
 /* Livro */
 .bookcase-book-wrapper {
     position: relative;
+    flex-shrink: 0;
     margin-right: -28px;
     z-index: 1;
+    cursor: pointer;
     transition: z-index 0s;
 }
 
@@ -220,7 +229,6 @@
     border-color: var(--color-accent);
 }
 
-/* Botão remover */
 .remove-btn {
     width: 100%;
     background: none;
