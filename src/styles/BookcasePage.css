@@ -1,4 +1,3 @@
-/* src/styles/BookcasePage.css */
 .bookcase-container {
     min-height: 100vh;
     display: flex;
@@ -47,9 +46,14 @@
     color: var(--color-text-secondary);
 }
 
-/* Estante */
+.bookcase-multishelf-container {
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+}
+
 .bookcase-shelf-wrapper {
-    padding-top: 2rem;
+    padding-top: 0;
     overflow: visible;
 }
 
@@ -57,45 +61,19 @@
     display: flex;
     flex-direction: row;
     align-items: flex-end;
-    padding: 1rem 1rem 0;
-    background-color: var(--wood-mid);
-    background-image:
-        repeating-linear-gradient(
-            88deg,
-            transparent,
-            transparent 3px,
-            rgba(255,255,255,0.04) 3px,
-            rgba(255,255,255,0.04) 6px
-        ),
-        repeating-linear-gradient(
-            180deg,
-            transparent,
-            transparent 12px,
-            rgba(0,0,0,0.06) 12px,
-            rgba(0,0,0,0.06) 13px
-        );
-    border: 1px solid var(--wood-dark);
-    border-bottom: none;
-    border-radius: var(--radius-lg) var(--radius-lg) 0 0;
+    padding: 2rem 4rem 2.5rem 4rem;
+
+    background-repeat: no-repeat;
+    background-size: 100% 100%;
+    background-position: center;
+
+    min-height: 180px;
+    border: none;
     overflow-x: visible;
     overflow-y: visible;
 }
 
-.shelf-floor {
-    background-color: var(--wood-dark);
-    background-image:
-        repeating-linear-gradient(
-            90deg,
-            transparent,
-            transparent 4px,
-            rgba(255,255,255,0.05) 4px,
-            rgba(255,255,255,0.05) 8px
-        );
-    height: 14px;
-    border-radius: 0 0 var(--radius-lg) var(--radius-lg);
-}
-
-/* Livro */
+/* Book */
 .bookcase-book-wrapper {
     position: relative;
     flex-shrink: 0;
@@ -211,7 +189,7 @@
     color: #0f6e56;
 }
 
-/* Select de status */
+/* Status select */
 .status-select {
     width: 100%;
     padding: 0.4rem 0.75rem;
@@ -239,37 +217,6 @@
     border-radius: var(--radius-sm);
     margin-top: 0.25rem;
     transition: background 0.15s, border-color 0.15s;
-}
-
-.bookcase-book-wrapper {
-    position: relative;
-    margin-right: -28px;
-    z-index: 1;
-    cursor: pointer;
-}
-
-.bookcase-book-wrapper:last-child {
-    margin-right: 0;
-}
-
-.bookcase-book-wrapper:hover {
-    z-index: 10;
-}
-
-.bookcase-spine {
-    width: 90px;
-    height: 135px;
-    border-radius: 3px 6px 6px 3px;
-    transition: transform 0.2s ease;
-    border: 0.5px solid rgba(0,0,0,0.08);
-    overflow: hidden;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-}
-
-.bookcase-book-wrapper:hover .bookcase-spine {
-    transform: translateY(-20px) scale(1.04);
 }
 
 .remove-btn:hover {

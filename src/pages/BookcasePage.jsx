@@ -3,6 +3,9 @@ import { useAuth } from "../hooks/useAuth";
 import { useBookcase } from "../hooks/useBookcase";
 import "../styles/BookcasePage.css";
 
+import bookcaseTopImg from "../assets/bookcaseTop.jpg";
+import bookcaseBottomImg from "../assets/bookcaseBottom.jpg";
+
 const BOOK_COLORS = [
     "#534AB7", "#3B6D11", "#993C1D", "#185FA5", "#854F0B",
     "#993556", "#0F6E56", "#5F5E5A", "#A32D2D", "#3C3489"
@@ -14,7 +17,7 @@ function getBookColor(index) {
 
 function BookSpine({ entry, index, onClick }) {
     const hasCover = entry.book.coverLink &&
-                     entry.book.coverLink !== "No cover link found.";
+        entry.book.coverLink !== "No cover link found.";
 
     return (
         <div
@@ -41,7 +44,7 @@ function BookSpine({ entry, index, onClick }) {
 
 export function BookcasePage() {
     const { logout } = useAuth();
-    const { bookcase, removeBook, loading, error, updateStatus, addReview } = useBookcase();
+    const { bookcase, loading, error } = useBookcase();
     const navigate = useNavigate();
 
     async function handleLogout() {
@@ -53,21 +56,20 @@ export function BookcasePage() {
         navigate(`/bookcase/showbook/${entryId}`);
     }
 
-    async function handleStatusChange(e) {
-        const newStatus = e.target.value;
-        try {
-            await updateStatus(entry.id, newStatus);
-            setFeedback({ type: "success", text: "Status updated!" });
-        } catch {
-            setFeedback({ type: "error", text: "Error updating status." });
-        }
+    const SHELF_MAX_WIDTH = 1020;
+    const BOOK_EFFECTIVE_WIDTH = 62;
+
+    const booksPerShelf = Math.floor(SHELF_MAX_WIDTH / BOOK_EFFECTIVE_WIDTH);
+
+    const shelves = [];
+    for (let i = 0; i < bookcase.length; i += booksPerShelf) {
+        shelves.push(bookcase.slice(i, i + booksPerShelf));
     }
 
     return (
         <div className="bookcase-container">
-
             <header className="home-header">
-                <h1><Link to="/home">Elton's Books</Link></h1>
+                <h1><Link to="/home">Eltons' Books</Link></h1>
                 <nav className="home-nav">
                     <Link to="/home">Home</Link>
                     <Link to="/search">Search Books</Link>
@@ -79,7 +81,6 @@ export function BookcasePage() {
             </header>
 
             <main className="bookcase-main">
-
                 <div className="bookcase-top">
                     <h2>My Bookcase</h2>
                     <p>{bookcase.length} {bookcase.length === 1 ? "book" : "books"}</p>
@@ -95,24 +96,36 @@ export function BookcasePage() {
                     </div>
                 )}
 
-                {!loading && bookcase.length > 0 && (
-                    <div className="bookcase-shelf-wrapper">
-                        <div className="bookcase-shelf">
-                            {bookcase.map((entry, index) => (
-                                <BookSpine
-                                    key={entry.id}
-                                    entry={entry}
-                                    index={index}
-                                    onClick={handleBookClick}
-                                />
-                            ))}
-                        </div>
-                        <div className="shelf-floor" />
+                {/* Dynamic renderization for shelves */}
+                {!loading && shelves.length > 0 && (
+                    <div className="bookcase-multishelf-container">
+                        {shelves.map((shelfBooks, shelfIndex) => {
+                            const isTopShelf = shelfIndex === 0;
+                            const backgroundImage = isTopShelf
+                                ? `url(${bookcaseTopImg})`
+                                : `url(${bookcaseBottomImg})`;
+
+                            return (
+                                <div key={shelfIndex} className="bookcase-shelf-wrapper">
+                                    <div
+                                        className="bookcase-shelf"
+                                        style={{ backgroundImage: backgroundImage }}
+                                    >
+                                        {shelfBooks.map((entry, index) => (
+                                            <BookSpine
+                                                key={entry.id}
+                                                index={shelfIndex * booksPerShelf + index}
+                                                entry={entry}
+                                                onClick={handleBookClick}
+                                            />
+                                        ))}
+                                    </div>
+                                </div>
+                            );
+                        })}
                     </div>
                 )}
-
             </main>
-
         </div>
     );
 }
