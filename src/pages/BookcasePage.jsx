@@ -44,7 +44,7 @@ function BookSpine({ entry, index, onClick }) {
 
 export function BookcasePage() {
     const { logout } = useAuth();
-    const { bookcase, loading, error } = useBookcase();
+    const { bookcase, loading, error, updateStatus } = useBookcase();
     const navigate = useNavigate();
 
     async function handleLogout() {
@@ -59,7 +59,7 @@ export function BookcasePage() {
     const SHELF_MAX_WIDTH = 1020;
     const BOOK_EFFECTIVE_WIDTH = 62;
 
-    const booksPerShelf = Math.floor(SHELF_MAX_WIDTH / BOOK_EFFECTIVE_WIDTH);
+    const booksPerShelf = 14;
 
     const shelves = [];
     for (let i = 0; i < bookcase.length; i += booksPerShelf) {
