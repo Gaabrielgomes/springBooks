@@ -61,7 +61,7 @@
     display: flex;
     flex-direction: row;
     align-items: flex-end;
-    padding: 2rem 4rem 2.5rem 4rem;
+    padding: 2rem 4rem 2rem 4rem;
 
     background-repeat: no-repeat;
     background-size: 100% 100%;
@@ -71,6 +71,10 @@
     border: none;
     overflow-x: visible;
     overflow-y: visible;
+}
+
+.bookcase-shelf-wrapper:not(:first-child) .bookcase-shelf {
+    padding: 0.8rem 4rem 2.5rem 4rem;
 }
 
 /* Book */
