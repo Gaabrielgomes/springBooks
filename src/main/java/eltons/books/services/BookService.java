@@ -7,6 +7,7 @@ import eltons.books.models.*;
 import eltons.books.repositories.AuthorRepository;
 import eltons.books.repositories.BookRepository;
 import jakarta.persistence.EntityNotFoundException;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import java.net.URLEncoder;
@@ -26,15 +27,16 @@ public class BookService {
     private final String apiUrl;
     private final String apiKey;
 
-    public BookService(BookRepository bookR, AuthorRepository authorR,
-                       ApiGetter apiGetter, DataConverter converter) {
+    public BookService(BookRepository bookR,
+                       AuthorRepository authorR,
+                       ApiGetter apiGetter,
+                       DataConverter converter,
+                       @Value("${GOOGLE_BOOKS_BASE_URL}") String apiUrl,
+                       @Value("${GOOGLE_BOOKS_API_KEY}") String apiKey) {
         this.bookR = bookR;
         this.authorR = authorR;
         this.apiGetter = apiGetter;
         this.converter = converter;
-
-        String apiUrl = System.getenv("GOOGLE_BOOKS_BASE_URL");
-        String apiKey = System.getenv("GOOGLE_BOOKS_API_KEY");
 
         if (apiUrl == null || apiUrl.isBlank())
             throw new IllegalStateException("Variable GOOGLE_BOOKS_BASE_URL not configured.");
@@ -72,7 +74,7 @@ public class BookService {
         String encodedTitle = URLEncoder.encode(
                 title.toLowerCase().replace(" ", "+"), StandardCharsets.UTF_8
         );
-        var json = apiGetter.getData(apiUrl + encodedTitle + apiKey);
+        var json = apiGetter.getData(apiUrl + encodedTitle + "&printType=books" + apiKey);
         BookResponse bookResponse = converter.getData(json, BookResponse.class);
         List<Book> convertedBooks = convertToBook(bookResponse);
 

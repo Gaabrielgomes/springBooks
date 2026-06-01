@@ -1,6 +1,9 @@
 package eltons.books.services;
 
-import eltons.books.DTOs.*;
+import eltons.books.DTOs.BookDTO;
+import eltons.books.DTOs.BookcaseEntryDTO;
+import eltons.books.DTOs.UserDTO;
+import eltons.books.DTOs.UserRegisterDTO;
 import eltons.books.components.ApiGetter;
 import eltons.books.components.DataConverter;
 import eltons.books.models.Book;
@@ -26,23 +29,21 @@ public class UserService {
     private final UserRepository userR;
     private final BookRepository bookR;
     private final BookcaseEntryRepository bookCER;
-    private final ApiGetter apiGetter;
     private final DataConverter converter;
     private final PasswordEncoder passwordEncoder;
 
-    public UserService(UserRepository userR, BookRepository bookR,
-                       BookcaseEntryRepository bookCER, ApiGetter apiGetter,
-                       DataConverter converter, PasswordEncoder passwordEncoder) {
+    public UserService(UserRepository userR,
+                       BookRepository bookR,
+                       BookcaseEntryRepository bookCER,
+                       ApiGetter apiGetter,
+                       DataConverter converter,
+                       PasswordEncoder passwordEncoder) {
         this.userR = userR;
         this.bookR = bookR;
         this.bookCER = bookCER;
-        this.apiGetter = apiGetter;
         this.converter = converter;
         this.passwordEncoder = passwordEncoder;
     }
-
-    private String APIURL = System.getenv("GOOGLE_BOOKS_BASE_URL");
-    private String APIKEY = System.getenv("GOOGLE_BOOKS_API_KEY");
 
     public Boolean newUser(UserRegisterDTO userRegisterDTO) {
         Optional<User> userToBeSaved = userR.findByName(userRegisterDTO.getName());

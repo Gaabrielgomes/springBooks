@@ -2,7 +2,6 @@ package eltons.books.controllers;
 
 import eltons.books.DTOs.BookDTO;
 import eltons.books.models.Book;
-import eltons.books.models.BookcaseEntry;
 import eltons.books.services.BookService;
 import jakarta.persistence.EntityNotFoundException;
 import org.springframework.http.HttpStatus;
