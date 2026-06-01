@@ -21,6 +21,7 @@ public class BookcaseEntry {
     @ManyToOne
     @JoinColumn(name = "book_id", nullable = false)
     private Book book;
+    @Column(columnDefinition = "TEXT")
     private String review;
     @Column(name = "added_at", nullable = false, updatable = false)
     private LocalDate addedAt;
