@@ -1,8 +1,8 @@
 package eltons.books.controllers;
 
+import eltons.books.DTOs.BookcaseEntryDTO;
 import eltons.books.DTOs.UserDTO;
 import eltons.books.models.BookcaseEntry;
-import eltons.books.DTOs.BookcaseEntryDTO;
 import eltons.books.models.User;
 import eltons.books.services.UserService;
 import org.springframework.http.HttpStatus;
@@ -51,12 +51,21 @@ public class UserController {
     }
 
     @Transactional
-    @PutMapping("/bookcase/addreview/{bookId}")
+    @PatchMapping("/bookcase/addreview/{bookId}")
     public ResponseEntity<String> addReview(@PathVariable Long bookId,
                                             @RequestBody String review) {
         User user = getAuthenticatedUser();
         userS.addReview(user, bookId, review);
         return ResponseEntity.status(HttpStatus.CREATED).body("Review added.");
+    }
+
+    @Transactional
+    @PatchMapping("/bookcase/updatestatus/{bookId}")
+    public ResponseEntity<String> updateStatus(@PathVariable Long bookId,
+                                               @RequestBody String review) {
+        User user = getAuthenticatedUser();
+        userS.updateStatus(user, bookId, review);
+        return ResponseEntity.status(HttpStatus.CREATED).body("Reading status updated.");
     }
 
     @Transactional

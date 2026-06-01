@@ -1,15 +1,12 @@
 package eltons.books.services;
 
-import eltons.books.DTOs.BookDTO;
-import eltons.books.DTOs.UserDTO;
-import eltons.books.DTOs.UserRegisterDTO;
+import eltons.books.DTOs.*;
 import eltons.books.components.ApiGetter;
 import eltons.books.components.DataConverter;
 import eltons.books.models.Book;
 import eltons.books.models.BookcaseEntry;
-import eltons.books.DTOs.BookcaseEntryDTO;
-import eltons.books.models.enums.Gender;
 import eltons.books.models.User;
+import eltons.books.models.enums.Gender;
 import eltons.books.models.enums.ReadingStatus;
 import eltons.books.repositories.BookRepository;
 import eltons.books.repositories.BookcaseEntryRepository;
@@ -120,35 +117,31 @@ public class UserService {
     }
 
     @Transactional
-    public Boolean addReview(User u, Long bookId, String review) {
-        Book b = bookR.findById(bookId)
-                .orElseThrow(() -> new EntityNotFoundException("Book not found."));
-
-        boolean entryExistance = bookCER.existsByUserAndBook(u, b);
-
-        if (entryExistance) {
-            BookcaseEntry bookcaseEntry = bookCER.getByUserAndBook(u, b);
-            bookcaseEntry.setReview(review);
-            return true;
-        }
-
-        throw new EntityNotFoundException("Book not found in your bookcase.");
+    public void addReview(User u, Long bookId, String review) {
+        BookcaseEntry bcE = getBookcaseEntryFromUser(u, bookId);
+        bcE.setReview(review);
     }
 
     @Transactional
-    public boolean removeFromBookcase(User u, Long bookId) {
-        Book b = bookR.findById(bookId)
-                .orElseThrow(() -> new EntityNotFoundException("Book not found."));
+    public void updateStatus(User u, Long bookId, String readingStatus) {
+        BookcaseEntry bcE = getBookcaseEntryFromUser(u, bookId);
 
-        boolean entryExistance = bookCER.existsByUserAndBook(u, b);
+        String fixedReadingStatus = readingStatus.replace("\"", "").trim();
+        bcE.setReadingStatus(ReadingStatus.fromString(fixedReadingStatus));
+    }
 
-        if (entryExistance) {
-            BookcaseEntry bookcaseEntry = bookCER.getByUserAndBook(u, b);
-            bookCER.delete(bookcaseEntry);
-            return true;
+    @Transactional
+    public void removeFromBookcase(User u, Long bookId) {
+        BookcaseEntry bcE = getBookcaseEntryFromUser(u, bookId);
+        bookCER.delete(bcE);
+    }
+
+    private BookcaseEntry getBookcaseEntryFromUser(User u, Long bookId) {
+        try {
+            return bookCER.getByUserAndBook(u.getId(), bookId);
+        } catch (NullPointerException | EntityNotFoundException e) {
+            throw new EntityNotFoundException("Book not found in your bookcase.");
         }
-
-        throw new EntityNotFoundException("Book not found in your bookcase.");
     }
 
     private UserDTO convertToUserDTO(User u) {

@@ -4,6 +4,7 @@ import eltons.books.models.Book;
 import eltons.books.models.BookcaseEntry;
 import eltons.books.models.User;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
 
 import java.util.List;
 
@@ -11,5 +12,11 @@ public interface BookcaseEntryRepository extends JpaRepository<BookcaseEntry, Lo
     boolean existsByUserAndBook(User user, Book book);
     List<BookcaseEntry> findAllByUser(User user);
 
-    BookcaseEntry getByUserAndBook(User user, Book book);
+    @Query(value = """
+        SELECT *
+        FROM bookcase_entry
+        WHERE user_id = :userId
+        AND book_id = :bookId
+    """, nativeQuery=true)
+    BookcaseEntry getByUserAndBook(Long userId, Long bookId);
 }
