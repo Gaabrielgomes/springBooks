@@ -1,32 +1,47 @@
+# docker-compose.yml
 services:
-
-  db:
-    image: postgres:18-alpine
-    container_name: books-db
+  # Aplicação Spring Boot
+  server:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: spring-books-app
+    ports:
+      - "${SERVER_PORT:-8889}:${SERVER_PORT:-8889}"
     env_file:
       - .env
+    depends_on:
+      db:
+        condition: service_healthy
+    restart: unless-stopped
+    networks:
+      - app-network
+
+  # Banco de dados PostgreSQL
+  db:
+    image: postgres:18.4-alpine
+    container_name: postgres-books-db
     environment:
-      POSTGRES_DB: ${PG_DB_BOOKS}
-      POSTGRES_USER: ${DB_USER}
-      POSTGRES_PASSWORD: ${DB_PSWD}
+      - POSTGRES_DB=${PG_DB_BOOKS:-books_db}
+      - POSTGRES_USER=${DB_USER:-postgres}
+      - POSTGRES_PASSWORD=${DB_PSWD:-postgres}
     ports:
       - "5432:5432"
     volumes:
-      - postgres-data:/var/lib/postgresql/data
-
-  app:
-    build: .
-    container_name: books-app
-    env_file:
-      - .env
-    environment:
-      SPRING_DATASOURCE_URL: ${DB_URL}
-      SPRING_DATASOURCE_USERNAME: ${DB_USER}
-      SPRING_DATASOURCE_PASSWORD: ${DB_PSWD}
-    ports:
-      - "8889:8889"
-    depends_on:
-      - db
+      - postgres_data:/var/lib/postgresql
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${DB_USER:-postgres} -d ${PG_DB_BOOKS:-books_db}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    restart: unless-stopped
+    networks:
+      - app-network
 
 volumes:
-  postgres-data:
+  postgres_data:
+    driver: local
+
+networks:
+  app-network:
+    driver: bridge
