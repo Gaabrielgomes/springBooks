@@ -9,6 +9,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 
 import javax.crypto.SecretKey;
+import java.nio.charset.StandardCharsets;
 import java.util.Date;
 
 @Service
@@ -16,12 +17,11 @@ public class JwtService {
 
     private final SecretKey secretKey;
 
-    public JwtService(@Value("${JWT_SERVICE_KEY}") String secret) {
-//        String secret = System.getenv("JWT_SERVICE_KEY");
+    public JwtService(@Value("${jwt.service.key}") String secret) {
         if (secret == null || secret.isBlank()) {
             throw new IllegalStateException("JWT_SERVICE_KEY is not configured.");
         }
-        this.secretKey = Keys.hmacShaKeyFor(secret.getBytes());
+        this.secretKey = Keys.hmacShaKeyFor(secret.getBytes(StandardCharsets.UTF_8));
     }
 
     public String generateToken(UserDetails user) {
