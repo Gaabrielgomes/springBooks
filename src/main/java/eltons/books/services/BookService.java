@@ -1,6 +1,8 @@
 package eltons.books.services;
 
 import eltons.books.DTOs.BookDTO;
+import eltons.books.DTOs.BookSavedDTO;
+import eltons.books.DTOs.BookSearchDTO;
 import eltons.books.components.ApiGetter;
 import eltons.books.components.DataConverter;
 import eltons.books.models.*;
@@ -10,11 +12,8 @@ import jakarta.persistence.EntityNotFoundException;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
-import java.net.URLEncoder;
-import java.nio.charset.StandardCharsets;
 import java.time.LocalDate;
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -51,10 +50,6 @@ public class BookService {
         return bookR.getAllBooks();
     }
 
-    public Optional<Book> getBookById(Long id) {
-        return bookR.findById(id);
-    }
-
     public BookDTO getBookByTitleFromDatabase(String title) {
         return bookR.findByTitleIgnoreCase(title)
                 .map(this::convertBookToDTO)
@@ -62,7 +57,7 @@ public class BookService {
     }
 
     public Book saveBook(BookDTO dto) {
-        return bookR.findByTitle(dto.title())
+        return bookR.findByTitleIgnoreCaseAndAuthorNameIgnoreCase(dto.title(), dto.author())
                 .orElseGet(() -> bookR.save(convertBookDTOToBook(dto)));
     }
 
@@ -70,36 +65,38 @@ public class BookService {
         bookR.deleteById(id);
     }
 
-    public List<Book> searchBookByTitle(String title) {
-        String encodedTitle = URLEncoder.encode(
-                title.toLowerCase().replace(" ", "+"), StandardCharsets.UTF_8
-        );
-        var json = apiGetter.getData(apiUrl + encodedTitle + "&printType=books" + apiKey);
-        BookResponse bookResponse = converter.getData(json, BookResponse.class);
-        List<Book> convertedBooks = convertToBook(bookResponse);
+    public List<BookDTO> searchBooksWithFilters(BookSearchDTO bookSDTO) {
 
-        if (bookResponse == null) {
-            List<Item> items = bookResponse.getItems();
-            if (items != null || !items.isEmpty()) {
-                throw new EntityNotFoundException("No books found for the search.");
-            }
+        StringBuilder parameters = new StringBuilder();
+
+        if (!bookSDTO.intitle().isEmpty()) {
+            String encodedTitle = "intitle:" + bookSDTO.intitle().toLowerCase().replace(" ", "+");
+            parameters.append(encodedTitle);
         }
+        if (!bookSDTO.inauthor().isEmpty()) {
+            parameters.append("+inauthor:")
+                      .append(bookSDTO.inauthor().toLowerCase().replace(" ", "+"));
+        }
+        if (!bookSDTO.inpublisher().isEmpty()) parameters.append("+inpublisher:").append(bookSDTO.inpublisher());
+        if (!bookSDTO.subject().isEmpty()) parameters.append("+subject:").append(bookSDTO.subject());
+        if (bookSDTO.isbn() != 0L) parameters.append("+isbn:").append(bookSDTO.isbn());
 
-        return convertedBooks;
-    }
+        if (parameters.toString().startsWith("+")) parameters.deleteCharAt(0);
 
-    public List<Book> searchBooksByAuthor(String authorName) {
-        String correctedAuthorName = authorName.toLowerCase().replace(" ", "+");
-        var json = apiGetter.getData(apiUrl + "+inauthor:" + correctedAuthorName + apiKey);
+        String requestString = apiUrl + parameters + "&printType=books" + "&maxResults=40" + apiKey;
+
+        var json = apiGetter.getData(requestString);
+
         BookResponse bookResponse = converter.getData(json, BookResponse.class);
 
-        if (bookResponse == null) {
-            List<Item> items = bookResponse.getItems();
-            if (items != null || !items.isEmpty()) {
-                throw new EntityNotFoundException("No books found for this author.");
+        if (bookResponse != null) {
+            if (bookResponse.getItems() != null && !bookResponse.getItems().isEmpty()) {
+                List<Book> convertedBooks = convertToBook(bookResponse);
+                return showFoundBooksAsDTO(convertedBooks);
             }
+            throw new EntityNotFoundException("No books found for the search.");
         }
-        return convertToBook(bookResponse);
+        throw new EntityNotFoundException("No books found for the search.");
     }
 
     public List<BookDTO> showFoundBooksAsDTO(List<Book> books) {
@@ -108,9 +105,17 @@ public class BookService {
                 .toList();
     }
 
+    public BookSavedDTO showSavedBook(Book b) {
+        return new BookSavedDTO(
+                b.getId(),
+                b.getTitle(),
+                b.getAuthor().getName(),
+                b.getCoverLink()
+        );
+    }
+
     private BookDTO convertBookToDTO(Book b) {
         return new BookDTO(
-                b.getId(),
                 b.getIsbn(),
                 b.getTitle(),
                 b.getAuthor().getName(),

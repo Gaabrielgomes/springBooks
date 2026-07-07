@@ -9,28 +9,15 @@ import java.util.List;
 import java.util.Optional;
 
 public interface BookRepository extends JpaRepository<Book, Long> {
-    @Query(value = """
-        SELECT 
-        b.id,
-        b.title,
-        authors.name,
-        b.description,
-        b.published_date,
-        b.pages_number,
-        b.cover_link
-        FROM books AS b
-        INNER JOIN authors ON authors.id = b.author_id
-        WHERE books.title LIKE "%:title%"
-        """, nativeQuery = true)
-    List<BookDTO> findBookDTOByTitle(String title);
+    Optional<Book> findByTitleAndAuthor(String title, String author);
 
-    Optional<Book> findByTitle(String title);
+    Optional<Book> findByTitleIgnoreCaseAndAuthorNameIgnoreCase(String title, String author);
 
     Optional<Book> findByTitleIgnoreCase(String title);
 
     @Query(value = """
         SELECT
-        b.id,
+        b.isbn,
         b.title,
         authors.name,
         b.description,
@@ -39,6 +26,7 @@ public interface BookRepository extends JpaRepository<Book, Long> {
         b.cover_link
         FROM books AS b
         INNER JOIN authors ON authors.id = b.author_id
+        ORDER BY b.id DESC
         """, nativeQuery = true)
     List<BookDTO> getAllBooks();
 }
