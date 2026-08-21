@@ -1,9 +1,13 @@
 package eltons.books.models.enums;
 
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
+
 public enum Gender {
     MALE("male"),
     FEMALE("female");
 
+    @Enumerated(EnumType.STRING)
     private final String gender;
 
     Gender(String g) {
