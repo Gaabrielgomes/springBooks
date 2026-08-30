@@ -24,6 +24,8 @@ public class User implements UserDetails {
     private Long id;
     private String name;
     private LocalDate birth;
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
     private Gender gender;
     private String selfDescription;
     private String password;
