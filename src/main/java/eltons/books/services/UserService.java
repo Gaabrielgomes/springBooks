@@ -85,18 +85,20 @@ public class UserService {
                 .toList();
     }
 
-    public BookcaseEntryDTO showBookFromUserBookcase(User user, Long entryId) {
-        return user.getBookcase().stream()
-                .filter(entry -> entry.getId().equals(entryId))
-                .findFirst()
-                .map(entry -> new BookcaseEntryDTO(
-                        entry.getId(),
-                        convertBookToDTO(entry.getBook()),
-                        entry.getReadingStatus().name(),
-                        entry.getReview(),
-                        entry.getAddedAt()
-                ))
-                .orElseThrow(() -> new EntityNotFoundException("Book not found in your bookcase."));
+    @Transactional(readOnly = true)
+    public BookcaseEntryDTO showBookFromUserBookcase(User user, Long bookId) {
+        try {
+            BookcaseEntry bookcaseEntry = bookCER.getByUserAndBook(user.getId(), bookId);
+            return new BookcaseEntryDTO(
+                    bookcaseEntry.getId(),
+                    convertBookToDTO(bookcaseEntry.getBook()),
+                    bookcaseEntry.getReadingStatus().name(),
+                    bookcaseEntry.getReview(),
+                    bookcaseEntry.getAddedAt()
+            );
+        } catch (EntityNotFoundException e) {
+            throw new EntityNotFoundException("Book not found in your bookcase.");
+        }
     }
 
     @Transactional
@@ -156,7 +158,6 @@ public class UserService {
 
     private BookDTO convertBookToDTO(Book b) {
         return new BookDTO(
-//                b.getId(),
                 b.getIsbn(),
                 b.getTitle(),
                 b.getAuthor().getName(),
