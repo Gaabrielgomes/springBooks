@@ -34,7 +34,7 @@ public class BookController {
         return ResponseEntity.ok(foundBook);
     }
 
-    @GetMapping("/search/withfilters")
+    @GetMapping("/search")
     public ResponseEntity<List<BookDTO>> searchBooksWithFilters(
             @RequestParam(required = false, defaultValue = "") String intitle,
             @RequestParam(required = false, defaultValue = "") String inauthor,
