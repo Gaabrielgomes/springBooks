@@ -65,11 +65,9 @@ public class UserService {
     }
 
     public UserDTO showUserFromId(Long id) {
-        Optional<User> userToBeShown = userR.findById(id);
-        if (userToBeShown.isPresent()) {
-            return convertToUserDTO(userToBeShown.get());
-        }
-        return convertToUserDTO(new User());
+        return userR.findById(id)
+                .map(this::convertToUserDTO)
+                .orElseThrow(() -> new EntityNotFoundException("User not found"));
     }
 
     @Transactional(readOnly = true)
