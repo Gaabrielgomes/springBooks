@@ -20,6 +20,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
+import java.time.Period;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
 import java.time.format.ResolverStyle;
@@ -175,18 +176,29 @@ public class UserService {
     }
 
     private boolean isValidDate(String dateStr) {
+        if (dateStr == null || dateStr.isBlank()) {
+            return false;
+        }
 
-        String datePattern = "uuuu-MM-dd";
+        DateTimeFormatter formatter = DateTimeFormatter
+                .ofPattern("uuuu-MM-dd", Locale.ENGLISH)
+                .withResolverStyle(ResolverStyle.STRICT);
 
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern(datePattern, Locale.ENGLISH);
-
-        formatter = formatter.withResolverStyle(ResolverStyle.STRICT);
-
+        LocalDate date;
         try {
-            LocalDate.parse(dateStr, formatter);
-            return true;
+            date = LocalDate.parse(dateStr, formatter);
         } catch (DateTimeParseException e) {
             return false;
         }
+
+        LocalDate today = LocalDate.now();
+
+        if (date.isAfter(today) || date.isEqual(today)) {
+            return false;
+        }
+
+        int age = Period.between(date, today).getYears();
+
+        return age >= 12 && age <= 100;
     }
 }
