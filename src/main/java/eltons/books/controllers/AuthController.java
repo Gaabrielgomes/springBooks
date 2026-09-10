@@ -15,9 +15,11 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
-import java.time.format.DateTimeParseException;
 import java.util.Map;
 
 @RestController
@@ -40,21 +42,13 @@ public class AuthController {
 
             if (Boolean.TRUE.equals(newUser)) {
                 return ResponseEntity.status(HttpStatus.CREATED)
-                        .body("Welcome to Eltons' Books, %s!".formatted(newUserDTO.getName()));
+                        .body("Welcome to Eltons' Books, %s!".formatted(newUserDTO.name()));
+            } else {
+                return ResponseEntity.status(HttpStatus.CONFLICT).body("User already exists.");
             }
-
-        } catch (DateTimeParseException e) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Invalid birth date.");
-
         } catch (IllegalArgumentException e) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Gender does not exists.");
-
-        } catch (RuntimeException e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body("Internal error while creating new User.");
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
         }
-
-        return ResponseEntity.status(HttpStatus.CONFLICT).body("User already exists.");
     }
 
     @PostMapping("/login")

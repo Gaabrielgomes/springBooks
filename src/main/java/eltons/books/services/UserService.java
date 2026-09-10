@@ -20,7 +20,11 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeParseException;
+import java.time.format.ResolverStyle;
 import java.util.List;
+import java.util.Locale;
 import java.util.Optional;
 
 @Service
@@ -46,20 +50,24 @@ public class UserService {
     }
 
     public Boolean newUser(UserRegisterDTO userRegisterDTO) {
-        Optional<User> userToBeSaved = userR.findByName(userRegisterDTO.getName());
-        if (userToBeSaved.isPresent()) {
-            return false;
+        Optional<User> userToBeSaved = userR.findByName(userRegisterDTO.name());
+
+        if (userR.findByName(userRegisterDTO.name()).isPresent()) return false;
+
+        if (!isValidDate(userRegisterDTO.birth())) {
+            throw new IllegalArgumentException("Invalid birth date: " + userRegisterDTO.birth());
         }
 
+        // FIX DATE VALIDATION
         User user = User.builder()
-                .name(userRegisterDTO.getName())
-                .birth(parseBirthDate(userRegisterDTO.getBirth()))
-                .gender(Gender.fromString(userRegisterDTO.getGender()))
-                .selfDescription(userRegisterDTO.getSelfDescription())
-                .password(passwordEncoder.encode(userRegisterDTO.getPassword()))
-                .role(userRegisterDTO.getRole())
+                .name(userRegisterDTO.name())
+                .birth(LocalDate.parse(userRegisterDTO.birth()))
+                .gender(Gender.fromString(userRegisterDTO.gender()))
+                .selfDescription(userRegisterDTO.selfDescription())
+                .password(passwordEncoder.encode(userRegisterDTO.password()))
+                .role(userRegisterDTO.role())
                 .build();
-        
+
         userR.save(user);
         return true;
     }
@@ -166,23 +174,19 @@ public class UserService {
         );
     }
 
-    private LocalDate parseBirthDate(String date) {
-        if (date == null || date.isBlank()) {
-            return null;
-        }
+    private boolean isValidDate(String dateStr) {
+
+        String datePattern = "uuuu-MM-dd";
+
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern(datePattern, Locale.ENGLISH);
+
+        formatter = formatter.withResolverStyle(ResolverStyle.STRICT);
 
         try {
-            if (date.length() == 4) {
-                return LocalDate.of(Integer.parseInt(date), 1, 1);
-            }
-
-            if (date.length() == 7) {
-                return LocalDate.parse(date + "-01");
-            }
-
-            return LocalDate.parse(date);
-        } catch (Exception e) {
-            return null;
+            LocalDate.parse(dateStr, formatter);
+            return true;
+        } catch (DateTimeParseException e) {
+            return false;
         }
     }
 }
